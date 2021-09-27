@@ -1,0 +1,42 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+
+class JobQuestion extends Model
+{
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('company', function (Builder $builder) {
+            if (auth()->check()) {
+                $builder->where('job_questions.company_id', user()->company_id);
+            }
+        });
+    }
+
+    protected $guarded = ['id'];
+
+    public function job()
+    {
+        return $this->belongsTo(Job::class);
+    }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
+
+    public function getAnswerByQuestion($applicationID)
+    {
+        $answer =  JobApplicationAnswer::where('job_application_id', $applicationID)
+            ->where('question_id', $this->question_id)->first();
+        if ($answer) {
+            return $answer->answer;
+        }
+        return '';
+    }
+}
