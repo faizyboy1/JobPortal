@@ -17,6 +17,7 @@ class Package
      */
     public function handle($request, Closure $next)
     {
+        /*
         $user = auth()->user();
         $activePackage = CompanyPackage::where('company_id', $user->company_id)
             ->where('status', 'active')
@@ -29,6 +30,7 @@ class Package
         if (is_null($activePackage)) {
             return redirect()->route('admin.subscribe.index');
         }
+        */
         return $next($request);
     }
 }

@@ -14,7 +14,9 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" id="sidebarnav" role="menu"
                 data-accordion="false">
 
+            {{-- 
             @if(!is_null($activePackage))
+            --}}
                 <!-- Add icons to the links using the .nav-icon class
                         with font-awesome or any other icon font library -->
                     <li class="nav-item">
@@ -139,7 +141,9 @@
                             </a>
                         </li>
                     @endif
+                {{-- 
                 @endif
+                --}}
                 <li class="nav-item">
                     <a href="{{ route('admin.report.index') }}" class="nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
                         <i class="fa fa-bar-chart" aria-hidden="true"></i>

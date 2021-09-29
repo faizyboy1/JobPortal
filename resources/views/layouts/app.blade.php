@@ -188,6 +188,7 @@
         </ul>
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
+        {{--
             @if(!$user->is_superadmin && !is_null($activePackage) && $activePackage->package->is_trial)
             <li class="nav-item">
                 <a href="{{ route('admin.subscribe.index') }}" class="nav-link text-white btn btn-danger btn-sm pt-0"><small>@lang('modules.dashboard.upgrade')<br>
@@ -201,6 +202,7 @@
 
             </li>
             @endif
+        --}}
             <li class="nav-item">
                 <a class="image-container nav-link waves-effect waves-light"
                 @if(!$user->is_superadmin)
