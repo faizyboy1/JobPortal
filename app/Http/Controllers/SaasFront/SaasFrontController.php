@@ -10,10 +10,12 @@ use App\FrontCmsHeader;
 use App\FrontIconFeature;
 use App\FrontImageFeature;
 use App\GlobalSetting;
+use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Controllers\Front\FrontJobsController;
 use App\Http\Requests\ContactForm;
 use App\Http\Requests\RegisterForm;
+use App\Http\Requests\RegisterFormCandidate;
 use App\LanguageSetting;
 use App\Mail\ContactMail;
 use App\Notifications\EmailVerification;
@@ -23,6 +25,7 @@ use App\Package;
 use App\Role;
 use App\ThemeSetting;
 use App\User;
+use App\UserDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -94,7 +97,7 @@ class SaasFrontController extends SaasFrontBaseController
             $company->career_page_link = str_slug($request->career_page_link, '-');
             $company->job_opening_text = 'Welcome!';
             $company->job_opening_title = 'We want people to thrive. We believe you do your best work when you feel your best.';
-            $company->timezone = 'Asia/Kolkata';
+            $company->timezone = 'Asia/Islamabad';
 
             if (module_enabled('Subdomain')){
                 $company->sub_domain = $request->sub_domain;
@@ -113,6 +116,54 @@ class SaasFrontController extends SaasFrontBaseController
 
             //assign admin role to default user
             $role = Role::where('company_id', $company->id)->first();
+            $user->roles()->attach($role->id);
+
+            $user->notify(new EmailVerification($user));
+
+            $superAdmin = User::whereNull('company_id')->get();
+            Notification::send($superAdmin, new NewCompanyRegister($company));
+        } catch (\Swift_TransportException $e) {
+            DB::rollback();
+            return Reply::error('Please contact administrator to set SMTP details to add company', 'smtp_error');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return Reply::error('Some error occurred when inserting the data. Please try again or contact support');
+        }
+        return Reply::dataOnly(['status' => 'success']);
+
+    }
+
+    public function candidateRegister(RegisterFormCandidate $request) {
+
+        try {
+
+            $user = new User();
+            $user->name = $request->full_name;
+            $user->email = $request->email;
+            $user->mobile = $request->phone;
+            $user->password = bcrypt($request->password);
+            $user->email_verification_code = str_random(40);
+            $user->status = 'inactive';
+            if ($request->hasFile('photo')) {
+                $user->image = Files::upload($request->photo,'candidate-photos');
+            }
+            $user->save();
+            
+            $user_detail = new UserDetail();
+            $user_detail->user_id = $user->id;
+            if ($request->hasFile('resume')) {
+                $user_detail->resume = Files::upload($request->resume, 'documents/user'.$user->id, null, null, false);
+            }
+            $user_detail->country = $request->country;
+            $user_detail->education = $request->education;
+            $user_detail->experience = $request->experience;
+            $user_detail->citizenship = $request->citizenship;
+            $user_detail->relocatable = $request->relocatable;
+            $user_detail->transferable = $request->transferable;
+            $user_detail->save();
+
+            //assign admin role to default user
+            $role = Role::where('name', 'candidate')->first();
             $user->roles()->attach($role->id);
 
             $user->notify(new EmailVerification($user));

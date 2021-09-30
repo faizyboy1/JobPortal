@@ -59,6 +59,9 @@ class LoginController extends Controller
             if(auth()->user()->is_superadmin) {
                 return redirect(route('superadmin.dashboard.index'));
             }
+            elseif(!auth()->user()->is_superadmin && auth()->user()->company_id == null) {
+                return redirect(route('candidate.dashboard'));
+            }
             return redirect('admin/dashboard');
         }
 
@@ -108,6 +111,9 @@ class LoginController extends Controller
         $user = auth()->user();
         if($user->is_superadmin) {
             return 'super-admin/dashboard';
+        }
+        elseif($user->roles[0]->name == 'candidate') {
+            return 'candidate/dashboard';
         }
         return 'admin/dashboard';
     }

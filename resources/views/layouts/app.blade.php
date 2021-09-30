@@ -256,6 +256,8 @@
 
     @if($user->is_superadmin)
         @include('sections.superadmin-left-sidebar')
+    @elseif($user->roles[0]->name == 'candidate')
+        @include('sections.candidate-left-sidebar')
     @else
         @include('sections.left-sidebar')
     @endif
@@ -395,7 +397,7 @@
     </div>
 
     <footer class="main-footer">
-        &copy; {{ \Carbon\Carbon::today()->year }} @lang('app.by') {{ $companyName }}
+        &copy; {{ \Carbon\Carbon::today()->year }} @lang('app.by') @isset($comapanyName){{ $companyName }}@endisset
     </footer>
 
     @include('sections.right-sidebar')

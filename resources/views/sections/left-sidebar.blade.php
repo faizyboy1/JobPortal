@@ -162,7 +162,9 @@
                 </li>
                 @endif
                 @endif
+                {{--
                 @if(!is_null($activePackage))
+                --}}
                     <li class="nav-item has-treeview @if(\Request()->is('admin/subscribe*'))active menu-open @endif">
                         <a href="#" class="nav-link">
                             <i class="nav-icon icon-settings"></i>
@@ -186,7 +188,9 @@
                             </li>
                         </ul>
                     </li>
-                @endif
+                    {{--
+                    @endif
+                    --}}
 
                 <li class="nav-item has-treeview @if(\Request()->is('admin/settings/*') || \Request()->is('admin/profile'))active menu-open @endif">
                     <a href="#" class="nav-link">
@@ -197,7 +201,9 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        {{--
                         @if(!is_null($activePackage))
+                        --}}
                             <li class="nav-item">
                                 <a href="{{ route('admin.profile.index') }}" class="nav-link {{ request()->is('admin/profile*') ? 'active' : '' }}">
                                     <i class="fa fa-circle-o nav-icon"></i>
@@ -260,12 +266,15 @@
                                     </a>
                                 </li>
                             @endif
+                        {{--
                         @endif
+                        --}}
                    
 
                     </ul>
                 </li>
 
+                {{--
                 @if(!is_null($activePackage) && $activePackage->package->career_website)
                     <li class="nav-header">@lang('app.miscellaneous')</li>
                     <li class="nav-item">
@@ -276,6 +285,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
 
             </ul>
         </nav>

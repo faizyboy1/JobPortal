@@ -20,6 +20,7 @@ Route::group(
         Route::get('/', 'SaasFrontController@index')->name('index');
         Route::post('/', 'SaasFrontController@submitContact')->name('contact');
         Route::post('/company-register', 'SaasFrontController@companyRegister')->name('company-register');
+        Route::post('/candidate-register', 'SaasFrontController@candidateRegister')->name('candidate-register');
         Route::get('/email-verification/{code}', 'SaasFrontController@getEmailVerification')->name('get-email-verification');
         Route::post('change-language/{code}', 'SaasFrontController@changeLanguage')->name('changeLanguage');
         Route::get('page/{slug?}', 'SaasFrontController@page')->name('page');
@@ -64,6 +65,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('mark-notification-read', ['uses' => 'NotificationController@markAllRead'])->name('mark-notification-read');
 
+    Route::group(
+        ['namespace' => 'Candidate', 'prefix' => 'candidate', 'as' => 'candidate.'],
+        function () {
+            Route::get('/dashboard', 'CandidateDashboardController@index')->name('dashboard');
+            Route::resource('profile', 'CandidateProfileController');
+        }
+    );
+
     // Admin routes
     Route::group(
         ['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'],
@@ -86,7 +95,7 @@ Route::group(['middleware' => 'auth'], function () {
 
                         Route::get('settings/delete-account', ['as' => 'settings.delete-account', 'uses' => 'CompanySettingsController@deleteAccount']);
                         Route::post('settings/delete-account-store', ['as' => 'settings.delete-account-store', 'uses' => 'CompanySettingsController@deleteAccountStore']);
-//                        Route::post('settings/delete-account-cancel', ['as' => 'settings.delete-account-cancel', 'uses' => 'ApplicationSettingsController@deleteAccountStore']);
+                        //Route::post('settings/delete-account-cancel', ['as' => 'settings.delete-account-cancel', 'uses' => 'ApplicationSettingsController@deleteAccountStore']);
 
                         Route::resource('settings', 'CompanySettingsController', ['only' => ['edit', 'update', 'index']]);
 

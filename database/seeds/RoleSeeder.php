@@ -38,5 +38,11 @@ class RoleSeeder extends Seeder
             $roleUser->role_id = $roleId;
             $roleUser->save();
         }
+
+        $role = new Role();
+        $role->name = "candidate";
+        $role->display_name = ucwords('Candidate');
+        $role->description = ucwords('This is a role for candidate who applies for jobs.');
+        $role->save();
     }
 }

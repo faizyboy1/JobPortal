@@ -2,7 +2,19 @@
 <html lang="en">
     <head>
     <style>
-            .required:after { content:" *";color: crimson;}
+            .required:after { 
+                content:" *";color: crimson;
+            }
+            label {
+                font-size: 14px !important;
+            }
+            input[type="radio"], input[type="checkbox"] {
+                width: 100% !important;
+            }
+            .form-group {
+                margin: 30px !important;
+                padding: 0;
+            }
 
         </style>
         <meta charset="utf-8">
@@ -70,100 +82,145 @@
         </div>
         <div class="main-container">
             <section class="imageblock switchable feature-large height-100">
-                <div class="imageblock__content col-lg-5 col-md-4 pos-right">
-                    <div class="background-image-holder">
-                        <img alt="image" src="{{ $headerData->register_background_image_url }}" />
-                    </div>
-                </div>
-                <div class="container pos-vertical-center">
-                    <div class="row">
-                        <div class="col-lg-7 col-md-7">
-                            <a href="{{ url('/')}}" class="d-none d-sm-block">
-                                <img class="logo logo-light float-right" alt="logo" src="{{ $headerData->logo_url }}"  height="40px"/>
-                            </a>
-                            <h2>@lang('modules.register.signUp')</h2>
-                            <p class="lead">@lang('modules.register.subHeading')</p>
-                            <form class="ajax-form" method="POST" id="createForm" onsubmit="return false;">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <h5 class="text-uppercase required">@lang('modules.register.companyDetails')</h5>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                            <div class="form-group">
-                                                <input type="text" id="company_name" name="company_name" class="form-control" placeholder="@lang('modules.accountSettings.companyName')" />
-                                            </div>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="form-group">
-                                            <input type="text" name="career_page_link" id="career_page_link" class="form-control" placeholder="@lang('modules.register.careerPageLink')" />
-                                        </div>
-                                    </div>
-                                </div>
-                                @if(module_enabled('Subdomain'))
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <div class="input-group mb-3">
-                                                    <input type="text" class="form-control" placeholder="subdomain"
-                                                           name="sub_domain" id="sub_domain">
-                                                    <div class="input-group-append">
-                                                    <span class="input-group-text"
-                                                          id="basic-addon2">.{{ get_domain() }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                                <!--end row-->
-                                <div class="row">
-                                    <div class="col-sm-12 mt-2">
-                                        <h5 class="text-uppercase required">@lang('modules.register.accountDetails')</h5>
-                                    </div>
-                                    <div class="col-lg-12 col-sm-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="@lang('modules.front.fullName')" />
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="form-group">
-                                            <input type="email" name="email" placeholder="@lang('modules.front.email')" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="form-group">
-                                            <input type="password" name="password" placeholder="@lang('app.password')" class="form-control" />
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        @if($setting->google_recaptcha_key)
-                                            <div class="g-recaptcha" data-sitekey="{{ $setting->google_recaptcha_key }}"></div>
-                                        @endif
-                                    <br>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <button type="submit" id="save-form" class="btn btn--primary type--uppercase">@lang('modules.register.createAccount')</button>
-                                    </div>
-                                    <div class="col-12">
-                                        <div>
-                                            <span class="type--fine-print">@lang('modules.register.alreadyRegistered')
-                                                <a href="{{ route('login') }}">@lang('modules.register.login')</a>
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <!--end row-->
-                            </form>
+               
+                    <div class="imageblock__content col-lg-5 col-md-4 pos-right">
+                        <div class="background-image-holder">
+                            <img alt="image" src="{{ $headerData->register_background_image_url }}" />
                         </div>
                     </div>
-                    <!--end of row-->
-                </div>
-                <!--end of container-->
+                    <div class="container-fluid">
+                       
+                            <div class="col-lg-7 col-md-7">
+                                <a href="{{ url('/')}}" class="d-none d-sm-block">
+                                    <img class="logo logo-light float-right" alt="logo" src="{{ $headerData->logo_url }}"  height="40px"/>
+                                </a>
+                                <h2>@lang('modules.register.signUp')</h2>
+                                <p class="lead">@lang('modules.register.subHeading')</p>
+                                
+                                <form id="createForm" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="job_id" value="">
+
+                                    <div class="container">
+                                        <div class="row gap-y">
+                                        
+                                        
+
+                                            <div class="col-md-8 pb-30 mt-50">
+
+                                                <div class="form-group">
+                                                    <input class="form-control form-control-lg" type="text" name="full_name" placeholder="@lang('modules.front.fullName')" value="@if($user) {{ $user->name }} @endif">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <input class="form-control form-control-lg" type="email" name="email"
+                                                            placeholder="@lang('modules.front.email')" value="@if($user) {{ $user->email }} @endif">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <input class="form-control form-control-lg" type="tel" name="phone"
+                                                            placeholder="@lang('modules.front.phone')">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <h6 class="mb-0">@lang('modules.front.photo')</h6>
+                                                    <input class="select-file" accept=".png,.jpg,.jpeg" type="file" name="photo">
+                                                </div>
+                                                
+
+                                                <div class="form-group">
+                                                    <h6 class="mb-0">@lang('modules.front.resume')</h6>
+                                                    <input class="select-file" accept=".pdf" type="file" name="resume">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="password" name="password"
+                                                            placeholder="Password" value="@if($user) {{ $user->password }} @endif">
+                                                    </div>
+                                            
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="password" name="confirm-password"
+                                                            placeholder="Confirm Password" value="@if($user) {{ $user->password }} @endif">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="text" name="education"
+                                                            placeholder="Education Level" value="">
+                                                    </div>
+                                            
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="text" name="country"
+                                                            placeholder="Current Work Country" value="">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="text" name="experience"
+                                                            placeholder="Year of experience" value="">
+                                                    </div>
+                                            
+                                                    <div class="col-md-6">
+                                                        <input class="form-control form-control-lg" type="text" name="citizenship"
+                                                            placeholder="Citizenship" value="">
+                                                    </div>
+                                                </div>
+ 
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-0 mt-3">Can you be located in another country?</h6>
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input col-md-12" type="radio" name="relocatable" id="inlineRadio1" value="1">
+                                                            <label class="custom-control-label" for="inlineRadio1">Yes</label>
+                                                        </div>
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input col-md-12" type="radio" name="relocatable" id="inlineRadio2" value="0">
+                                                            <label class="custom-control-label" for="inlineRadio2">No</label>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-0 mt-3">Transferable work permit</h6>
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input col-md-12" type="radio" name="transferable" id="inlineRadio3" value="1">
+                                                            <label class="custom-control-label" for="inlineRadio3">Yes</label>
+                                                        </div>
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input col-md-12" type="radio" name="transferable" id="inlineRadio4" value="0">
+                                                            <label class="custom-control-label" for="inlineRadio4">No</label>
+                                                        </div>
+                                                        
+                                                    </div>    
+                                                </div>
+                                                
+                                                <div class="col-md-12 pb-30">
+                                                    <div class="row">
+                                                        <div class="col-md-12 mt-5">
+                                                            <button class="btn btn-lg btn-primary btn-block theme-background" id="save-form" type="button">@lang('modules.front.submitApplication')</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-4 px-20 pb-30 mt-50">
+                                                <h5>@lang('modules.front.personalInformation')</h5>
+                                            </div>
+                                    
+                                    
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                       
+                        <!--end of row-->
+                    </div>
+                    <!--end of container-->
+                
             </section>
         </div>
         <!--<div class="loader"></div>-->
@@ -215,27 +272,26 @@
             }
 
             $('#save-form').click(function (e) {
-                @if(!is_null($setting->google_recaptcha_key))
-                    if(grecaptcha.getResponse().length == 0){
-                        e.preventDefault();
-                        alert('Please click the reCAPTCHA checkbox');
-                        return false;
-                    }
-                @endif
                 $.easyAjax({
-                    url: "{{route('company-register')}}",
-                    container: '#createForm',
-                    type: "POST",
-                    data: $('#createForm').serialize(),
-                    success: function(response) {
-                        $('#createForm').trigger("reset");
-                        swal("Sent!", "Your account has been created successfully.\n Check your email to activate your account.", "success");
+                url: "{{route('candidate-register')}}",
+                container: '#createForm',
+                type: "POST",
+                file:true,
+                redirect: true,
+                // data: $('#createForm').serialize(),
+                success: function (response) {
+                    if(response.status == 'success'){
+                        var successMsg = '<div class="alert alert-success my-100" role="alert">' +
+                            response.msg + ' <a class="" href="{{ jobOpenings($global->career_page_link) }}">{{ __("app.view").' '.__("modules.front.jobOpenings") }} <i class="fa fa-arrow-right"></i></a>'
+                            '</div>';
+                        $('.main-content .container').html(successMsg);
+                        $('.main-content').css('bg', '#ffffff');
                     }
-                    // ,
-                    // error: function (response) {
-                    //     swal("Error!", "Your need to fill all the form fields!", "error");
-                    // }
-                })
+                },
+                error: function (response) {
+                    handleFails(response);
+                }
+            })
             });
         </script>
 
