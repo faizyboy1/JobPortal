@@ -72,6 +72,7 @@
                                 </a>
                             </div>
                             <!--end module-->
+                            <!--end module-->
                         </div>
                     </div>
                     <!--end of row-->
