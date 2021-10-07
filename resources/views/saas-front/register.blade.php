@@ -62,7 +62,7 @@
     <body class=" ">
         <a id="start"></a>
         <div class="nav-container d-block d-sm-none">
-            <nav class="bar bar-4 bar--transparent bar--absolute" data-fixed-at="200">
+            <nav class="bar bar-4 baaar--transparent bar--absolute" data-fixed-at="200">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-1 col-md-2 col-md-offset-0 col-4">
