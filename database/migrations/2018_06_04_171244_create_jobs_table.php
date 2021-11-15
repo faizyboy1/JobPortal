@@ -30,6 +30,8 @@ class CreateJobsTable extends Migration
 
             $table->dateTime('start_date');
             $table->dateTime('end_date');
+            $table->string('start_time_slot');
+            $table->string('end_time_slot');
 
             $table->enum('status', ['active', 'inactive'])->default('active');
 

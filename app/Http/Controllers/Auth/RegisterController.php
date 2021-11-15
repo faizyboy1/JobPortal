@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use App\GlobalSetting;
 use App\ThemeSetting;
 use App\FrontCmsHeader;
+use App\Company_category;
 use App\Http\Controllers\SaasFront\SaasFrontBaseController;
 
 class RegisterController extends SaasFrontBaseController
@@ -50,6 +51,7 @@ class RegisterController extends SaasFrontBaseController
         $this->setting = $this->global;
         $this->headerData = FrontCmsHeader::first();
         $this->frontTheme = $this->adminTheme;
+        $this->categories = Company_category::get();
         return view('saas-front.register', $this->data);
     }
 

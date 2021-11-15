@@ -125,6 +125,8 @@ class AdminJobsController extends AdminBaseController
         $job->category_id = $request->category_id;
         $job->start_date = $request->start_date;
         $job->end_date = $request->end_date;
+        $job->start_time_slot = $request->start_time_slot;
+        $job->end_time_slot = $request->end_time_slot;
         $job->status = $request->status;
         $job->required_columns = $required_columns;
         $job->section_visibility = $section_visibility;

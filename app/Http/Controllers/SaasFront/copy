@@ -94,11 +94,11 @@ class SaasFrontController extends SaasFrontBaseController
         $company = new Company();
         try {
             $company->company_name = $request->company_name;
-            $company->category_id = $request->ctg_id;
             $company->career_page_link = str_slug($request->career_page_link, '-');
             $company->job_opening_text = 'Welcome!';
             $company->job_opening_title = 'We want people to thrive. We believe you do your best work when you feel your best.';
             $company->timezone = 'Asia/Karachi';
+
             if (module_enabled('Subdomain')){
                 $company->sub_domain = $request->sub_domain;
             }
@@ -106,9 +106,8 @@ class SaasFrontController extends SaasFrontBaseController
             $company->save();
 
             $user = new User();
-            $user->name = $request->company_name;
             $user->company_id = $company->id;
-            $user->account_details = $request->account_details;
+            $user->name = $request->full_name;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
             $user->email_verification_code = str_random(40);
@@ -137,32 +136,30 @@ class SaasFrontController extends SaasFrontBaseController
     public function candidateRegister(RegisterFormCandidate $request) {
 
         try {
+
             $user = new User();
-            $user->name = $request->first_name;
-            $user->middle_name = $request->middle_name;
-            $user->last_name = $request->last_name;
+            $user->name = $request->full_name;
             $user->email = $request->email;
             $user->mobile = $request->phone;
             $user->password = bcrypt($request->password);
             $user->email_verification_code = str_random(40);
-            $user->category_id = $request->ctg_id;
             $user->status = 'inactive';
-            // if ($request->hasFile('photo')) {
-            //     $user->image = Files::upload($request->photo,'candidate-photos');
-            // }
+            if ($request->hasFile('photo')) {
+                $user->image = Files::upload($request->photo,'candidate-photos');
+            }
             $user->save();
             
             $user_detail = new UserDetail();
             $user_detail->user_id = $user->id;
-            // if ($request->hasFile('resume')) {
-            //     $user_detail->resume = Files::upload($request->resume, 'documents/user'.$user->id, null, null, false);
-            // }
-            // $user_detail->country = $request->country;
-            // $user_detail->education = $request->education;
-            // $user_detail->experience = $request->experience;
-            // $user_detail->citizenship = $request->citizenship;
-            // $user_detail->relocatable = $request->relocatable;
-            // $user_detail->transferable = $request->transferable;
+            if ($request->hasFile('resume')) {
+                $user_detail->resume = Files::upload($request->resume, 'documents/user'.$user->id, null, null, false);
+            }
+            $user_detail->country = $request->country;
+            $user_detail->education = $request->education;
+            $user_detail->experience = $request->experience;
+            $user_detail->citizenship = $request->citizenship;
+            $user_detail->relocatable = $request->relocatable;
+            $user_detail->transferable = $request->transferable;
             $user_detail->save();
 
             //assign admin role to default user

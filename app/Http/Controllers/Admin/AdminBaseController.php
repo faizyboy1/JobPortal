@@ -78,10 +78,10 @@ class AdminBaseController extends Controller
             $this->languageSettings = LanguageSetting::where('status', 'enabled')->orderBy('language_name')->get();
             $this->activePackage = CompanyPackage::with('package')->where('company_id', $this->user->company_id)
                 ->where('status', 'active')
-                ->where(function ($query) {
-                    $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
-                    $query->orWhereNull('end_date');
-                })
+                //  ->where(function ($query) {
+                //      $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
+                //      $query->orWhereNull('end_date');
+                //  })
 
                 ->first();
 

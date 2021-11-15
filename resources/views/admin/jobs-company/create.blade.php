@@ -79,8 +79,6 @@
             }
         });
 
-       
-
         $('#save-form').click(function () {
             $.easyAjax({
                 url: '{{route("admin.job-company.store")}}',

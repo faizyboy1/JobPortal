@@ -69,13 +69,6 @@
   background-color: #f1f1f1;
 }
 
-select.form-control-lg:not([size]):not([multiple]) {
-    -webkit-appearance: none;
-    background: #fcfcfc;
-    border-radius: 6px;
-    border: 1px solid #ececec;
-}
-
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
@@ -123,7 +116,6 @@ select.form-control-lg:not([size]):not([multiple]) {
                                     <img class="logo logo-dark" alt="logo" src="{{ $firstHeaderData->logo_url }}" height="50px" />
                                 </a>
                             </div>
-                            <!--end module-->
                             <!--end module-->
                         </div>
                     </div>
@@ -176,23 +168,12 @@ select.form-control-lg:not([size]):not([multiple]) {
                                                         <input type="text" id="company_name" name="company_name" class="form-control" placeholder="@lang('modules.accountSettings.companyName')" />
                                                     </div>
                                             </div>
-                                           
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <input type="text" name="career_page_link" id="career_page_link" class="form-control" placeholder="@lang('modules.register.careerPageLink')" />
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="form-group">
-                                                <select class="form-control form-control-lg" name="ctg_id">
-                                                    <option>@lang('modules.register.selectIndustry')</option>
-                                                        @foreach($categories as $data)
-                                                            <option value="{{$data['id']}}">{{$data['company_name']}}</option>
-                                                        @endforeach
-                                                </select>
-                                        </div> 
-
                                         @if(module_enabled('Subdomain'))
                                             <div class="row">
                                                 <div class="col-sm-12">
@@ -216,10 +197,9 @@ select.form-control-lg:not([size]):not([multiple]) {
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
-                                                    <input type="text" class="form-control" id="account_details" name="account_details" placeholder="@lang('modules.front.AccountDetails')" />
+                                                    <input type="text" class="form-control" id="full_name" name="full_name" placeholder="@lang('modules.front.fullName')" />
                                                 </div>
                                             </div>
-                                            
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <input type="email" name="email" placeholder="@lang('modules.front.email')" class="form-control" />
@@ -265,18 +245,8 @@ select.form-control-lg:not([size]):not([multiple]) {
                                                     
                                                         <div class="col-md-12 pb-30 mt-50">
                                                         <h5 class="px-20 pb-30 mt-50">@lang('modules.front.personalInformation')</h5>
-                                                            <div class="row"> 
-                                                                <div class="col mb-3">
-                                                                    <input class="form-control form-control-lg" type="text" name="first_name" placeholder="@lang('modules.register.firstName')" value="@if($user) {{ $user->name }} @endif">
-                                                                </div>
-
-                                                                <div class="col">
-                                                                    <input class="form-control form-control-lg" type="text" name="middle_name" placeholder="@lang('modules.register.middleName')" value="@if($user) {{ $user->name }} @endif">
-                                                                </div>
-
-                                                                <div class="col">
-                                                                    <input class="form-control form-control-lg" type="text" name="last_name" placeholder="@lang('modules.register.lastName')" value="@if($user) {{ $user->name }} @endif">
-                                                                </div>
+                                                            <div class="form-group">
+                                                                <input class="form-control form-control-lg" type="text" name="full_name" placeholder="@lang('modules.front.fullName')" value="@if($user) {{ $user->name }} @endif">
                                                             </div>
 
                                                             <div class="form-group">
@@ -290,15 +260,6 @@ select.form-control-lg:not([size]):not([multiple]) {
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <select class="form-control form-control-lg" name="ctg_id">
-                                                                        <option>@lang('modules.register.selectIndustry')</option>
-                                                                    @foreach($categories as $data)
-                                                                         <option value="{{$data['id']}}">{{$data['company_name']}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div> 
-
-                                                            <!-- <div class="form-group">
                                                                 <h6 class="mb-0">@lang('modules.front.photo')</h6>
                                                                 <input class="select-file" accept=".png,.jpg,.jpeg" type="file" name="photo">
                                                             </div>
@@ -307,21 +268,21 @@ select.form-control-lg:not([size]):not([multiple]) {
                                                             <div class="form-group">
                                                                 <h6 class="mb-0">@lang('modules.front.resume')</h6>
                                                                 <input class="select-file" accept=".pdf" type="file" name="resume">
-                                                            </div> -->
+                                                            </div>
 
-                                                            <div class="row">
-                                                                <div class="col">
+                                                            <div class="form-group">
+                                                                <div class="col-md-6 mb-4">
                                                                     <input class="form-control form-control-lg" type="password" name="password"
                                                                         placeholder="Password" value="@if($user) {{ $user->password }} @endif">
                                                                 </div>
                                                         
-                                                                <div class="col">
+                                                                <div class="col-md-6 mb-4">
                                                                     <input class="form-control form-control-lg" type="password" name="confirm-password"
                                                                         placeholder="Confirm Password" value="@if($user) {{ $user->password }} @endif">
                                                                 </div>
                                                             </div>
 
-                                                            <!-- <div class="form-group">
+                                                            <div class="form-group">
                                                                 <div class="col-md-6 mb-4">
                                                                     <input class="form-control form-control-lg" type="text" name="education"
                                                                         placeholder="Education Level" value="">
@@ -372,30 +333,27 @@ select.form-control-lg:not([size]):not([multiple]) {
                                                                     </div>
                                                                     
                                                                 </div>    
-                                                            </div> -->
+                                                            </div>
                                                             
                                                             <div class="col-md-12 pb-30">
                                                                 <div class="row">
                                                                     <div class="col-md-12 mt-5 mb-4">
-                                                                        <button class="btn btn-lg btn-primary btn-block theme-background" id="save-candidate-form" type="button">@lang('modules.register.createAccount')</button>
+                                                                        <button class="btn btn-lg btn-primary btn-block theme-background" id="save-candidate-form" type="button">@lang('modules.front.submitApplication')</button>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-12">
-                                                                <div>
-                                                                    <span class="type--fine-print">@lang('modules.register.alreadyRegistered')
-                                                                        <a href="{{ route('login') }}">@lang('modules.register.login')</a>
-                                                                    </span>
                                                                 </div>
                                                             </div>
 
                                                         </div>
-                                                            
+                                                        
+                                                
+                                                
                                                     </div>
                                                 </div>
                                     </form>
                                 </div>
 
+                            
+                             
                         </div>
                     </div>
                     <!--end of row-->

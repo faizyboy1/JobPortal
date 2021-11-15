@@ -35,6 +35,11 @@ class JobApplication extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function candidateInterviewTimeSlot()
+    {
+        return $this->belongsTo(CandidateInterviewTimeSlot::class);
+    }
+
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');

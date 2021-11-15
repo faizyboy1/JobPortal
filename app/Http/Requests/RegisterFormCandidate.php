@@ -26,19 +26,24 @@ class RegisterFormCandidate extends FormRequest
     {
 
         $rules = [
-            'full_name' => 'required',
+            'first_name' => 'required',
+            'middle_name' => 'required',
+            'last_name' => 'required',
             'email' => 'email|required',
-            'phone' => 'required',
-            'photo' => 'mimes:jpeg,jpg,png',
-            'resume' => 'mimes:jpeg,jpg,png,doc,docx,rtf,xls,xlsx,pdf',
+            // 'photo' => 'mimes:jpeg,jpg,png',
+            // 'resume' => 'mimes:jpeg,jpg,png,doc,docx,rtf,xls,xlsx,pdf',
             'password' => 'required|string|min:6',
-            'country' => 'required|string',
-            'education' => 'required|string',
-            'experience' => 'required|string|min:1',
-            'citizenship' => 'required|string',
-            'relocatable' => 'required|integer',
-            'transferable' => 'required|integer'
+            'ctg_id' => 'required'
+            // 'country' => 'required|string',
+            // 'education' => 'required|string',
+            // 'experience' => 'required|string|min:1',
+            // 'citizenship' => 'required|string',
+            // 'relocatable' => 'required|integer',
+            // 'transferable' => 'required|integer'
         ];
+        if(!is_null('first_name') || !is_null('_name')){
+            // $rules.
+        }
 
         return $rules;
     }

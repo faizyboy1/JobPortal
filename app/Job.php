@@ -86,6 +86,16 @@ class Job extends Model
             ->get();
     }
 
+    public static function companyJobs($companyId)
+    {
+        return Job::withoutGlobalScope('company')
+            ->where('status', 'active')
+            ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
+            ->where('end_date', '>=', Carbon::now()->format('Y-m-d'))
+            ->where('company_id', $companyId)
+            ->get();
+    }
+
     public static function activeJobsCount()
     {
         return Job::where('status', 'active')

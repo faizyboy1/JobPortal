@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Billable;
+use App\Company_category;
+use App\User;
+use App\Job;
 use Illuminate\Notifications\Notifiable;
 use Stripe\Invoice as StripeInvoice;
 use Laravel\Cashier\Invoice;
@@ -68,6 +71,16 @@ class Company extends Model
         return $this->hasMany(JobApplication::class);
     }
 
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function job()
+    {
+        return $this->hasMany(Job::class);
+    }
+
     public function package()
     {
         return $this->belongsTo(Package::class, 'package_id');
@@ -97,6 +110,11 @@ class Company extends Model
             ->where('featured', 1)->where('id', $this->id)->first();
     }
 
+    public static function activeCompanies()
+    {
+        return Company::where('status', 'active')->get();
+    }
+
     public function setSubDomainAttribute($value)
     {
         // domain is added in the request Class
@@ -110,5 +128,8 @@ class Company extends Model
             return $global->login_background_image_url;
         }
         return asset_url('login-background-image/' . $this->login_background);
+    }
+    public function category(){
+        return $this->belongsTo(Company_category::class);
     }
 }

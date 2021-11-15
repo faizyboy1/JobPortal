@@ -80,7 +80,6 @@
                     <div id="calendar"></div>
                 </div><!-- /.card-body -->
             </div>
-
         </div>
         <div class="col-md-4">
             <div class="card">
@@ -129,7 +128,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                     <span class="caption-subject font-red-sunglo bold uppercase" id="modelHeading"></span>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body">        
                     Loading...
                 </div>
                 <div class="modal-footer">
@@ -185,6 +184,7 @@
         // Schedule create modal view
 
         @if($user->cans('edit_schedule'))
+        
         // Schedule create modal view
         function editUpcomingSchedule(event, id) {
             if (!$(event.target).closest('.editSchedule').length) {

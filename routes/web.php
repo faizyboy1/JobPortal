@@ -34,9 +34,14 @@ Route::group(
     ['namespace' => 'Front', 'as' => 'jobs.'],
     function () {
         Route::get('/careers/{slug?}', 'FrontJobsController@jobOpenings')->name('jobOpenings');
+        // Route::get('/job-companies/{slug?}/{id?}', 'FrontCompanyController@allCompanies')->name('allCompanies');
+        Route::get('/companies', 'FrontCompanyController@allCompanies')->name('allCompanies');
+        Route::post('/more-company-data', 'FrontCompanyController@moreCompanyData')->name('more-company-data');
+        Route::post('/search-company', 'FrontCompanyController@searchCompany')->name('search-company');
         Route::post('/more-data', 'FrontJobsController@moreData')->name('more-data');
         Route::post('/search-job', 'FrontJobsController@searchJob')->name('search-job');
 
+        Route::get('/job-companies/{id?}/{slug?}', 'FrontJobsController@job_companies')->name('job-companies');
         Route::get('/job/{slug}', 'FrontJobsController@jobDetail')->name('jobDetail');
         Route::get('/job/{slug}/apply', 'FrontJobsController@jobApply')->name('jobApply');
 
@@ -149,6 +154,7 @@ Route::group(['middleware' => 'auth'], function () {
 
                 Route::get('job-company/data', 'AdminJobsCompanyController@data')->name('job-company.data');
                 Route::resource('job-company', 'AdminJobsCompanyController');
+               
 
                 Route::post('job-applications/rating-save/{id?}', 'AdminJobApplicationController@ratingSave')->name('job-applications.rating-save');
                 Route::post('job-applications/viewDetails', 'AdminJobApplicationController@viewDetails')->name('job-applications.viewDetails');
@@ -247,8 +253,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('language-settings/change-language-status/{id}', 'LanguageSettingsController@changeStatus')->name('language-settings.changeStatus');
             Route::resource('language-settings', 'LanguageSettingsController');
 
-            Route::resource('theme-settings', 'SuperAdminThemeSettingsController')
-            ;
+            Route::resource('job-category', 'AdminJobsCategoryController');
+            Route::get('job-category/data', 'AdminJobsCategoryController@data')->name('job-category.data');
+
+            Route::resource('theme-settings', 'SuperAdminThemeSettingsController');
             Route::post('theme-settings/rtlTheme', ['uses' => 'SuperAdminThemeSettingsController@rtlTheme'])->name('theme-settings.rtlTheme');
             Route::put('footer-settings/update-footer-menu/{id}', 'SuperAdminFooterSettingsController@updateFooterMenu')->name('footer-settings.updateFooterMenu');
             Route::post('footer-settings/store-footer-menu', 'SuperAdminFooterSettingsController@storeFooterMenu')->name('footer-settings.storeFooterMenu');
@@ -262,7 +270,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('update-application/checkIfFileExtracted', ['as' => 'update-application.checkIfFileExtracted', 'uses' => 'UpdateApplicationController@checkIfFileExtracted']);
             Route::get('update-application/install', ['as' => 'update-application.install', 'uses' => 'UpdateApplicationController@install']);
             Route::resource('update-application', 'UpdateApplicationController');
-
 
             Route::post('company/updateCompanyPackage/{id}', 'SuperAdminCompanyController@updateCompanyPackage')->name('company.updateCompanyPackage');
             Route::get('company/changePackage/{id}', 'SuperAdminCompanyController@changePackage')->name('company.changePackage');

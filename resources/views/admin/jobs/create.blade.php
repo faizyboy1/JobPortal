@@ -173,6 +173,24 @@
                             <div class="col-md-12">
 
                                 <div class="form-group">
+                                    <label for="startTime">@lang('modules.jobs.startTimeSlot')</label>
+                                    <input type="text" class="form-control" id="start-time-slot" name="start_time_slot">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <div class="form-group">
+                                    <label for="endTime">@lang('modules.jobs.endTimeSlot')</label>
+                                    <input type="text" class="form-control" id="end-time-slot" name="end_time_slot">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <div class="form-group">
                                     <label for="address">@lang('app.status')</label>
                                     <select name="status" id="status" class="form-control">
                                         <option value="active">@lang('app.active')</option>
@@ -282,6 +300,8 @@
         $(".select2").select2();
 
         $('#date-end').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
+        $('#start-time-slot').bootstrapMaterialDatePicker({ date: false, format : 'HH:mm', shortTime:false });
+        $('#end-time-slot').bootstrapMaterialDatePicker({ date: false, format : 'HH:mm', shortTime:false });
         $('#date-start').bootstrapMaterialDatePicker({ weekStart : 0, time: false }).on('change', function(e, date)
         {
             $('#date-end').bootstrapMaterialDatePicker('setMinDate', date);

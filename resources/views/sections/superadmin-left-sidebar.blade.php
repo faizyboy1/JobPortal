@@ -43,6 +43,17 @@
                     </a>
                 </li>
 
+               
+                        <li class="nav-item">
+                            <a href="{{ route('superadmin.job-category.index') }}" class="nav-link {{ request()->is('superadmin/job-category*') ? 'active' : '' }}">
+                                <i class="nav-icon icon-film"></i>
+                                <p>
+                                    @lang('menu.Category')
+                                </p>
+                            </a>
+                        </li>
+                   
+
                 <li class="nav-item">
                     <a href="{{ route('superadmin.invoices.index') }}" class="nav-link {{ request()->is('super-admin/invoices*') ? 'active' : '' }}">
                         <i class="nav-icon icon-docs"></i>

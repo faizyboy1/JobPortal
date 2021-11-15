@@ -111,8 +111,9 @@
                             <div class="bar__module">
                                 <ul class="menu-horizontal text-left">
                                     <li class="dropdown">
-                                        <a class="inner-link" href="@if(\Request()->is('/')) #header-section @else {{ route('index') }} @endif">@lang('menu.home')</a>
+                                        <a class="inner-link" href="{{ url('companies') }}">@lang('menu.home')</a>
                                     </li>
+                                    {{-- @if(\Request()->is('/')) #header-section @else {{ route('index') }} @endif --}}
                                     <li class="dropdown">
                                         <a class="inner-link" href="@if(\Request()->is('/')) #features @else {{ route('index').'#features' }} @endif">@lang('menu.features')</a>
                                     </li>

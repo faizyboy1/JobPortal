@@ -17,7 +17,7 @@
         <?php Session::forget('error');?>
     @endif
 
-    @if(!$user->is_superadmin && !is_null($activePackage) && $activePackage->package->is_trial)
+   {{-- @if(!$user->is_superadmin && !is_null($activePackage) && $activePackage->package->is_trial)
         <div class="alert alert-warning col-12">
                 @lang('messages.activeTrialPackage')
                 @php
@@ -28,7 +28,7 @@
                 @endphp
                 @lang('modules.dashboard.daysLeft')
         </div>
-    @endif
+    @endif --}}
 
     @if(!$user->is_superadmin && !is_null($activePackage) && !$activePackage->package->is_trial)
         <div class="alert alert-warning col-12">

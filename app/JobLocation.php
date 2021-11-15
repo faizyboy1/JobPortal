@@ -9,16 +9,16 @@ class JobLocation extends Model
 {
     protected $guarded = ['id'];
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::addGlobalScope('company', function (Builder $builder) {
-            if (auth()->check() && !auth()->user()->is_superadmin) {
-                $builder->where('job_locations.company_id', auth()->user()->company_id);
-            }
-        });
-    }
+    //     static::addGlobalScope('company', function (Builder $builder) {
+    //         if (auth()->check() && !auth()->user()->is_superadmin) {
+    //             $builder->where('job_locations.company_id', auth()->user()->company_id);
+    //         }
+    //     });
+    // }
 
     public function country()
     {

@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
 class JobCompany extends Model
 {
     protected $fillable = ['company_name', 'company_email', 'company_phone', 'website', 'address', 'show_in_frontend','status','logo'];

@@ -120,7 +120,6 @@ class AdminJobsCompanyController extends AdminBaseController
         abort_if(!$this->user->cans('view_job_company'), 403);
 
         $categories = jobCompany::all();
-
         return DataTables::of($categories)
             ->addColumn('action', function ($row) {
                 $action = '';

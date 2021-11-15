@@ -77,6 +77,7 @@
 
                 {{--
                 @if(!is_null($activePackage) && $activePackage->package->career_website)
+                --}}
                     <li class="nav-header">@lang('app.miscellaneous')</li>
                     <li class="nav-item">
                         <a href="{{ jobOpenings($global->career_page_link) }}" target="_blank"
@@ -85,7 +86,8 @@
                             <p>@lang('app.careerWebsite')</p>
                         </a>
                     </li>
-                @endif
+                    {{--
+                    @endif
                 --}}
 
             </ul>

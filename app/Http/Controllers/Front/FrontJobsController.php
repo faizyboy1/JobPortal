@@ -6,6 +6,7 @@ use App\ApplicationSetting;
 use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Requests\FrontJobApplication;
+use App\CandidateInterviewTimeSlot;
 use App\Job;
 use App\JobApplication;
 use App\JobApplicationAnswer;
@@ -67,18 +68,17 @@ class FrontJobsController extends FrontBaseController
         }
         abort_if(is_null($company),404);
 
-
         $activePackage = CompanyPackage::with('package')->where('company_id', $company->id)
             ->where('status', 'active')
-            ->where(function($query){
-                $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
-                $query->orWhereNull('end_date');
-            })->first();
+            // ->where(function($query){
+            //     $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
+            //     $query->orWhereNull('end_date');
+            // })
+            ->first();
 
         if (!$activePackage) {
             return abort(404);
         }
-
         $this->jobs = Job::frontActiveJobs($company->id);
         $this->locations = JobLocation::withoutGlobalScope('company')->where('company_id', $company->id)->get();
         $this->categories = JobCategory::withoutGlobalScope('company')->where('company_id', $company->id)->get();
@@ -102,6 +102,65 @@ class FrontJobsController extends FrontBaseController
 
         return view('front.job-openings', $this->data);
     }
+
+    public function job_companies($id='' ,$slug=null)
+    {
+        
+        $company = Company::withoutGlobalScope('company');
+        if(!is_null($slug)) {
+            $company = $company->where('career_page_link', $slug)->first();
+            if(module_enabled('Subdomain'))
+            {
+                $company = Company::where('sub_domain', request()->getHost())->first();
+            }
+        } else {
+            $company = $this->global;
+            if(module_enabled('Subdomain'))
+            {
+                $company = Company::where('sub_domain', request()->getHost())->first();
+            }
+            
+        }
+        abort_if(is_null($company),404);
+        
+        
+        $activePackage = CompanyPackage::with('package')->where('company_id', $company->id)
+            ->where('status', 'active')
+            ->where(function($query){
+                $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
+                $query->orWhereNull('end_date');
+            })->first();
+
+        if (!$activePackage) {
+            return abort(404);
+        }
+
+        $this->jobs = Job::companyJobs($id);
+
+        $this->locations = JobLocation::withoutGlobalScope('company')->where('company_id', $id)->get();
+        $this->categories = JobCategory::withoutGlobalScope('company')->where('company_id', $id)->get();
+
+        $this->company = $this->global = $company;
+        $this->companyName = $this->global->company_name;
+        $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
+        App::setLocale($this->global->locale);
+        Carbon::setLocale($this->global->locale);
+        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
+        
+        $this->jobs = Job::companyJobs($id)->take($this->perPage);
+        $this->jobCount = Job::companyJobs($id)->count();
+        // dd($this->jobs[0]->category);
+        
+        $this->locations = JobLocation::all();
+        $this->categories = JobCategory::all();
+        $careerPackage = $this->company->package;
+        if(is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0){
+            return redirect("/");
+        }
+
+        return view('front.job-openings', $this->data);
+    }
+
     function moreData(Request $request){
         
         if($request->ajax()){
@@ -217,6 +276,70 @@ class FrontJobsController extends FrontBaseController
         return view('front.job-detail', $this->data);
     }
 
+    // public function job_companies($id='' ,$slug='')
+    // {
+    //     if(module_enabled('Subdomain')){
+    //         $company = Company::select('id', 'sub_domain')->where('sub_domain', $_SERVER['HTTP_HOST'])->first();
+    //         Session::put('companyId', $company->id);
+    //     }
+
+    //     if($slug!='')
+    //     {
+    //         $this->job = Job::where('slug', $slug)
+    //         ->whereDate('start_date', '<=', Carbon::now())
+    //         ->whereDate('end_date', '>=', Carbon::now())
+    //         ->where('status', 'active');
+    //         // dd($this->data['job'],$id);
+    //         // dd(1);
+    //     }
+    //     if($id!='')
+    //     {
+    //         $this->job = Job::where('company_id', $id)
+    //         ->whereDate('start_date', '<=', Carbon::now())
+    //         ->whereDate('end_date', '>=', Carbon::now())
+    //         ->where('status', 'active');
+    //         //  dd($this->data['job'],$id);
+    //     }
+        
+    //     if(module_enabled('Subdomain')){
+    //         $this->job->where('company_id', $company->id);
+    //     }
+        
+    //     $this->job=$this->job->firstOrFail();
+    //     dd($this->job);
+
+    //     $this->linkedinGlobal = LinkedInSetting::first();
+    //     Session::put('slug', $slug);
+
+    //     $this->company = $this->global = $this->job->company;
+
+    //     if(!module_enabled('Subdomain')){
+    //         Session::put('companyId', $this->job->company->id);
+    //     }
+
+    //     $activePackage = CompanyPackage::where('company_id', $this->company->id)
+    //         ->whereDate('end_date', '>=', Carbon::now())
+    //         ->where('status', 'active')
+    //         ->first();
+
+    //     abort_if(!$activePackage,404);
+
+    //     $this->companyName = $this->global->company_name;
+
+    //     $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
+    //     App::setLocale($this->global->locale);
+    //     Carbon::setLocale($this->global->locale);
+    //     setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
+
+    //     $this->pageTitle = $this->job->title . ' - ' . $this->companyName;
+    //     $this->metaTitle = isset($this->job->meta_details['title'])?$this->job->meta_details['title']:'';
+    //     $this->metaDescription = isset($this->job->meta_details)?$this->job->meta_details['description']:'';
+    //     $this->metaImage = $this->job->company->logo_url;
+    //     $this->pageUrl = request()->url();
+
+    //     return view('front.job-detail', $this->data);
+    // }
+
     public function callback($provider, Request $request)
     {
         if ($request->error) {
@@ -273,19 +396,51 @@ class FrontJobsController extends FrontBaseController
         if ($this->accessToken) {
             $this->user = Socialite::driver('linkedin')->userFromToken($this->accessToken);
         }
-
         $this->job = Job::with('company')->where('slug', $slug)->first();
-      
         $this->company = $this->global = $this->job->company;
-      
-        $activePackage = CompanyPackage::where('company_id', $this->company->id)
-            ->where('status', 'active')
-            ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'))
-            ->first();
+         
+        // Convert time into slots
+        $start_time=explode(":",$this->job->start_time_slot);
+        $end_time=explode(":",$this->job->end_time_slot);
+        $start_time_A=(int)$start_time[0];
+        $start_time_B=(int)$start_time[1];
 
-        if (!$activePackage) {
-            return abort(404);
+        $end_time_A=(int)$end_time[0];
+        $end_time_B=(int)$end_time[1];
+
+        $slots=[];
+        for($i=0;$i<=$end_time_A-$start_time_A;$i++){
+            if($i == $end_time_A-$start_time_A){
+                continue;
+            }
+            $slots[$i]=$start_time_A+$i ." to ".($start_time_A+1+$i);
         }
+        // if($start_time_A > $end_time_A){
+        //     for($i=$start_time_A;$i<=$end_time_A;$i++){
+        //         $slots=$i." to ".($i+1);
+        //     }
+        // }
+
+        // if($end_time_A < $start_time_A){
+        //     for($i=$end_time_A;$i<=$start_time_A;$i--){
+        //         $slots=$i." to ".($i-1);
+        //     }
+
+        // }
+        $this->slots1=$slots;
+        
+        
+
+
+
+        // $activePackage = CompanyPackage::where('company_id', $this->company->id)
+        //     ->where('status', 'active')
+        //     ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'))
+        //     ->first();
+
+        // if (!$activePackage) {
+        //     return abort(404);
+        // }
         $this->jobQuestion = $this->job->questions;
 
         $this->companyName = $this->global->company_name;
@@ -302,18 +457,19 @@ class FrontJobsController extends FrontBaseController
     public function saveApplication(FrontJobApplication $request)
     {
         $job = Job::findOrFail($request->job_id);
-        $activePackage = CompanyPackage::where('company_id', $job->company_id)
-            ->where('status', 'active')
-            ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'))
-            ->first();
+        // $activePackage = CompanyPackage::where('company_id', $job->company_id)
+        //     ->where('status', 'active')
+        //     ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'))
+        //     ->first();
         
-        if (!$activePackage) {
-            return abort(404);
-        }
-
+        // if (!$activePackage) {
+        //     return abort(404);
+        // }
+            
         $applicationStatus = ApplicationStatus::where('company_id', $job->company_id)->firstOrFail();
        
         $jobApplication = new JobApplication();
+        $candidateInterviewTimeSlot = new CandidateInterviewTimeSlot();
         $jobApplication->full_name = $request->full_name;
         $jobApplication->job_id = $request->job_id;
         $jobApplication->company_id = $job->company_id;
@@ -334,6 +490,8 @@ class FrontJobsController extends FrontBaseController
             $jobApplication->state = $this->getName($statesArray, $request->state);
             $jobApplication->city = $request->city;
         }
+        $candidateInterviewTimeSlot->time_slots = $request->interview_time_slot;
+        $candidateInterviewTimeSlot->job_application_id = $request->job_id;
 
         $jobApplication->cover_letter = $request->cover_letter;
         $jobApplication->column_priority = 0;
@@ -380,9 +538,9 @@ class FrontJobsController extends FrontBaseController
             }
         }
         
-        Notification::send($users, new NewJobApplication($jobApplication, $linkedin));
+        // Notification::send($users, new NewJobApplication($jobApplication, $linkedin));
         
-        Mail::send(new ReceivedApplication($jobApplication));
+        // Mail::send(new ReceivedApplication($jobApplication));
 
         return Reply::dataOnly(['status' => 'success', 'msg' => __('modules.front.applySuccessMsg')]);
     }
@@ -460,6 +618,6 @@ class FrontJobsController extends FrontBaseController
         }
 
         return $jobs->get();
-    }
+     }
     
 }

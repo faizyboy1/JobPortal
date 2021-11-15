@@ -71,17 +71,19 @@
                             </a>
                         </li>
                     @endif
+
                     @if(in_array("view_job_company", $userPermissions))
                         <li class="nav-item">
                             <a href="{{ route('admin.job-company.index') }}" class="nav-link {{ request()->is('admin/job-company*') ? 'active' : '' }}">
                                 <i class="nav-icon icon-film"></i>
                                 <p>
-                                    @lang('menu.companies')
+                                    @lang('modules.dashboard.departments')
                                 </p>
                             </a>
                         </li>
                     @endif
 
+                
                     @if(in_array("view_job_applications", $userPermissions))
                         <li class="nav-item">
                             <a href="{{ route('admin.job-applications.index') }}" class="nav-link {{ request()->is('admin/job-applications*') ? 'active' : '' }}">
@@ -274,8 +276,8 @@
                     </ul>
                 </li>
 
-                {{--
-                @if(!is_null($activePackage) && $activePackage->package->career_website)
+               
+                @if($activePackage->package->career_website != "")
                     <li class="nav-header">@lang('app.miscellaneous')</li>
                     <li class="nav-item">
                         <a href="{{ jobOpenings($global->career_page_link) }}" target="_blank"
@@ -285,12 +287,23 @@
                         </a>
                     </li>
                 @endif
-                --}}
 
+               
+                    <li class="nav-header">@lang('app.miscellaneous')</li>
+                    <li class="nav-item">
+                        <a href="{{ url('companies') }}" target="_blank"
+                           class="nav-link">
+                            <i class="nav-icon fa fa-external-link"></i>
+                            <p>@lang('Companies')</p>
+                        </a>
+                    </li>
+                
+
+                
+                
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
 </aside>
-

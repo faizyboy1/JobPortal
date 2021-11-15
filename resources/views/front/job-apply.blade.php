@@ -114,6 +114,26 @@
                         </div>
                     </div>
                 @endif
+
+                {{--
+                    <!-- <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <h6>Please Selece Interview Time Slots To Appear</h6>
+                                    <select class="select2" name="interviewtimeslot" id="interviewTimeSlot">
+                                        <option value="">@lang('modules.front.selectTimeSlot')</option>
+                                        @foreach ($slots1 as $slot =>$value)
+                                        <option value="">{{$value}}</option>
+                                            
+                                        @endforeach
+
+                                        
+                                    </select>
+                            </div>
+                        </div>
+                 </div> -->
+                --}}
+
                 @if($job->section_visibility['profile_image'] == 'yes')
                     <div class="form-group">
                         <h6>@lang('modules.front.photo')</h6>
@@ -264,7 +284,7 @@
                 type: "POST",
                 file:true,
                 redirect: true,
-                // data: $('#createForm').serialize(),
+                //  data: $('#createForm').serialize(),
                 success: function (response) {
                     if(response.status == 'success'){
                         var successMsg = '<div class="alert alert-success my-100" role="alert">' +
@@ -281,6 +301,7 @@
         });
 
         function handleFails(response) {
+            console.log(response.responseJSON.errors)
             if (typeof response.responseJSON.errors != "undefined") {
                 var keys = Object.keys(response.responseJSON.errors);
 

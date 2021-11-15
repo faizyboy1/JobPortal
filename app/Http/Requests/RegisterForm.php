@@ -26,7 +26,6 @@ class RegisterForm extends FormRequest
         return [
             'company_name' => 'required',
             'sub_domain' => module_enabled('Subdomain') ?'required|min:4|unique:companies,sub_domain|max:50|sub_domain':'',
-            'full_name' => 'required',
             'career_page_link' => 'required|unique:companies',
             'email' => 'required|email|unique:users',
             'password' => 'required'

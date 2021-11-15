@@ -11,7 +11,7 @@
             <option value="all">@lang('modules.front.allLocation')</option>  
             @foreach($locations as $location)
                 <option value="{{ $location->id }}">{{ ucfirst($location->location) }}</option>                 
-                @endforeach
+            @endforeach
         </select>
     </div>
     
