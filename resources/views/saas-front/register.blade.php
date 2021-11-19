@@ -278,7 +278,7 @@
                 type: "POST",
                 file:true,
                 redirect: true,
-                // data: $('#createForm').serialize(),
+                 data: $('#createForm').serialize(),
                 success: function (response) {
                     if(response.status == 'success'){
                         var successMsg = '<div class="alert alert-success my-100" role="alert">' +

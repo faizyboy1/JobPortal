@@ -19,7 +19,7 @@ class CandidateProfileController extends CandidateBaseController
     public function index()
     {
         $this->calling_codes = $this->getCallingCodes();
-        return view('candidate.profile.index',$this->data);
+        return view('candidate.profile.index', $this->data);
     }
 
     /**
@@ -72,13 +72,14 @@ class CandidateProfileController extends CandidateBaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProfile $request){
+    public function update(UpdateProfile $request)
+    {
 
         $user = User::find($this->user->id);
         $user->name = $request->name;
         $user->email = $request->email;
 
-        if($request->password != ''){
+        if ($request->password != '') {
             $user->password = Hash::make($request->password);
         }
 
@@ -92,11 +93,11 @@ class CandidateProfileController extends CandidateBaseController
         }
 
         if ($request->hasFile('image')) {
-            $user->image = Files::upload($request->image,'profile');
+            $user->image = Files::upload($request->image, 'profile');
         }
         $user->save();
 
-        return Reply::redirect(route('candidate.profile.index'), __('menu.myProfile').' '.__('messages.updatedSuccessfully'));
+        return Reply::redirect(route('candidate.profile.index'), __('menu.myProfile') . ' ' . __('messages.updatedSuccessfully'));
     }
 
     /**

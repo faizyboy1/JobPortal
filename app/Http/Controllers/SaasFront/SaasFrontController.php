@@ -42,9 +42,9 @@ class SaasFrontController extends SaasFrontBaseController
 
     public function index()
     {
-        if(module_enabled('Subdomain')){
+        if (module_enabled('Subdomain')) {
             $company = Company::where('sub_domain', request()->getHost())->first();
-            if($company){
+            if ($company) {
                 $job = new FrontJobsController();
                 return  $job->jobOpenings();
             }
@@ -58,38 +58,40 @@ class SaasFrontController extends SaasFrontBaseController
         $this->imageFeatures = FrontImageFeature::where('language_settings_id', $imageFeaturesCount > 0 ? $this->localeLanguage->id : $this->englishLangId)->get();
         $this->iconFeatures = FrontIconFeature::where('language_settings_id', $iconFeaturesCount > 0 ? $this->localeLanguage->id : $this->englishLangId)->get();
         $this->feedbacks = ClientFeedback::where('language_settings_id', $feedbackCount > 0 ? $this->localeLanguage->id : $this->englishLangId)->get();
-        $this->packages = Package::where('is_trial', 0)->where('status', 1)->where('is_private',0)->get();
+        $this->packages = Package::where('is_trial', 0)->where('status', 1)->where('is_private', 0)->get();
         $this->frontDetail = FooterSetting::where('language_settings_id', $footerSettingsCount > 0 ? $this->localeLanguage->id : $this->englishLangId)->first();
         $this->footerSettings = FooterMenu::where('language_settings_id', $footerMenuCount > 0 ? $this->localeLanguage->id : $this->englishLangId)->get();
 
         $currentDate = Carbon::now()->format('Y-m-d');
         $this->featuredCompanies = Company::where('status', 'active')
-            ->where(function ($query) use($currentDate) {
+            ->where(function ($query) use ($currentDate) {
                 $query->whereNull('featured_start_date')
                     ->orWhere(DB::raw('DATE(`featured_start_date`)'), '<=', $currentDate);
             })
-            ->where(function ($query) use($currentDate) {
-                    $query->whereNull('featured_end_date')
-                        ->orWhere(DB::raw('DATE(`featured_end_date`)'), '>=', $currentDate);
-                })
-                ->where(function ($query) use($currentDate) {
-                    $query->whereNull('licence_expire_on')
-                        ->orWhere(DB::raw('DATE(`licence_expire_on`)'), '>=', $currentDate);
-                })
+            ->where(function ($query) use ($currentDate) {
+                $query->whereNull('featured_end_date')
+                    ->orWhere(DB::raw('DATE(`featured_end_date`)'), '>=', $currentDate);
+            })
+            ->where(function ($query) use ($currentDate) {
+                $query->whereNull('licence_expire_on')
+                    ->orWhere(DB::raw('DATE(`licence_expire_on`)'), '>=', $currentDate);
+            })
             ->where('featured', 1)->get();
         return view('saas-front.index', $this->data);
     }
 
-    public function submitContact(ContactForm $request) {
+    public function submitContact(ContactForm $request)
+    {
         $superAdmin = User::whereNull('company_id')->first();
-        
+
         Mail::to($superAdmin->email)->send(new ContactMail($request));
 
         // Notification::send($superAdmin, new ContactMail(request));
         return Reply::dataOnly(['status' => 'success']);
     }
 
-    public function companyRegister(RegisterForm $request) {
+    public function companyRegister(RegisterForm $request)
+    {
 
         $company = new Company();
         try {
@@ -99,7 +101,7 @@ class SaasFrontController extends SaasFrontBaseController
             $company->job_opening_title = 'We want people to thrive. We believe you do your best work when you feel your best.';
             $company->timezone = 'Asia/Islamabad';
 
-            if (module_enabled('Subdomain')){
+            if (module_enabled('Subdomain')) {
                 $company->sub_domain = $request->sub_domain;
             }
 
@@ -130,10 +132,10 @@ class SaasFrontController extends SaasFrontBaseController
             return Reply::error('Some error occurred when inserting the data. Please try again or contact support');
         }
         return Reply::dataOnly(['status' => 'success']);
-
     }
 
-    public function candidateRegister(RegisterFormCandidate $request) {
+    public function candidateRegister(RegisterFormCandidate $request)
+    {
 
         try {
 
@@ -145,14 +147,14 @@ class SaasFrontController extends SaasFrontBaseController
             $user->email_verification_code = str_random(40);
             $user->status = 'inactive';
             if ($request->hasFile('photo')) {
-                $user->image = Files::upload($request->photo,'candidate-photos');
+                $user->image = Files::upload($request->photo, 'candidate-photos');
             }
             $user->save();
-            
+
             $user_detail = new UserDetail();
             $user_detail->user_id = $user->id;
             if ($request->hasFile('resume')) {
-                $user_detail->resume = Files::upload($request->resume, 'documents/user'.$user->id, null, null, false);
+                $user_detail->resume = Files::upload($request->resume, 'documents/user' . $user->id, null, null, false);
             }
             $user_detail->country = $request->country;
             $user_detail->education = $request->education;
@@ -178,7 +180,6 @@ class SaasFrontController extends SaasFrontBaseController
             return Reply::error('Some error occurred when inserting the data. Please try again or contact support');
         }
         return Reply::dataOnly(['status' => 'success']);
-
     }
 
     public function getEmailVerification($code)
@@ -201,15 +202,12 @@ class SaasFrontController extends SaasFrontBaseController
             $this->messsage = __('messages.emailVerifySuccess');
             $this->class = 'success';
             return view('saas-front.email-verification', $this->data);
-
-
         } else {
 
             $this->messsage = __('messages.emailVerifyFail');
             $this->class = 'error';
             return view('saas-front.email-verification', $this->data);
         }
-
     }
 
     public function changeLanguage($code)

@@ -41,7 +41,8 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.report.index') }}" class="nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
+                        <a href="{{ route('candidate.resume.index') }}" class="nav-link {{ request()->is('candidate/resume*') ? 'active' : '' }}">
+                           
                         <i class="fa fa-bar-chart" aria-hidden="true"></i>
                         <p>
                             CV Builder
@@ -75,8 +76,8 @@
                     </ul>
                 </li>
 
-                {{--
-                @if(!is_null($activePackage) && $activePackage->package->career_website)
+                
+                {{-- @if(!is_null($activePackage) && $activePackage->package->career_website) --}}
                     <li class="nav-header">@lang('app.miscellaneous')</li>
                     <li class="nav-item">
                         <a href="{{ jobOpenings($global->career_page_link) }}" target="_blank"
@@ -85,8 +86,8 @@
                             <p>@lang('app.careerWebsite')</p>
                         </a>
                     </li>
-                @endif
-                --}}
+                {{-- @endif --}}
+               
 
             </ul>
         </nav>

@@ -236,14 +236,14 @@
                                         <p>@lang('menu.themeSettings')</p>
                                     </a>
                                 </li>
-                                @if($linkedinGlobal->status == 'enable')
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.linkedin-settings.index') }}" class="nav-link {{ request()->is('admin/settings/linkedin-settings') ? 'active' : '' }}">
-                                            <i class="fa fa-circle-o nav-icon"></i>
-                                            <p>@lang('menu.linkedInSettings')</p>
-                                        </a>
-                                    </li>
-                                @endif
+                                    @if($linkedinGlobal->status == 'enable')
+                                        <li class="nav-item">
+                                            <a href="{{ route('admin.linkedin-settings.index') }}" class="nav-link {{ request()->is('admin/settings/linkedin-settings') ? 'active' : '' }}">
+                                                <i class="fa fa-circle-o nav-icon"></i>
+                                                <p>@lang('menu.linkedInSettings')</p>
+                                            </a>
+                                        </li>
+                                    @endif
                                 @if(is_null($global->account_delete_at))
                                     <li class="nav-item">
                                         <a href="{{ route('admin.settings.delete-account') }}" class="nav-link {{ request()->is('admin/settings/delete-account') ? 'active' : '' }}">
@@ -274,8 +274,8 @@
                     </ul>
                 </li>
 
-                {{--
-                @if(!is_null($activePackage) && $activePackage->package->career_website)
+                
+                {{-- @if(!is_null($activePackage) && $activePackage->package->career_website) --}}
                     <li class="nav-header">@lang('app.miscellaneous')</li>
                     <li class="nav-item">
                         <a href="{{ jobOpenings($global->career_page_link) }}" target="_blank"
@@ -284,8 +284,8 @@
                             <p>@lang('app.careerWebsite')</p>
                         </a>
                     </li>
-                @endif
-                --}}
+                {{-- @endif --}}
+               
 
             </ul>
         </nav>

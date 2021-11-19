@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Skill extends Model
 {
+    protected $guarded = ['id'];
     protected static function boot()
     {
         parent::boot();
@@ -22,6 +23,4 @@ class Skill extends Model
     {
         return $this->belongsTo(JobCategory::class, 'category_id');
     }
-
-    protected $guarded = ['id'];
 }
