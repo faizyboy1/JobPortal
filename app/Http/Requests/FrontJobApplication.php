@@ -34,6 +34,7 @@ class FrontJobApplication extends CoreRequest
 
         $rules = [
             'full_name' => 'required',
+            'interviewTimeSlot' => 'required',
             'email' => [
                 'required',
                 Rule::unique('job_applications')->where(function ($query) use ($job) {

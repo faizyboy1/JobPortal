@@ -115,24 +115,23 @@
                     </div>
                 @endif
 
-                {{--
-                    <!-- <div class="row">
+               
+                 <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <h6>Please Selece Interview Time Slots To Appear</h6>
-                                    <select class="select2" name="interviewtimeslot" id="interviewTimeSlot">
-                                        <option value="">@lang('modules.front.selectTimeSlot')</option>
+                                    <select class="select2" name="interviewTimeSlot" id="interviewTimeSlot">
+                                        
+                                        <option >@lang('modules.front.selectTimeSlot')</option>
                                         @foreach ($slots1 as $slot =>$value)
-                                        <option value="">{{$value}}</option>
-                                            
+                                        <option value="{{$value}}">{{$value}}</option>
                                         @endforeach
 
-                                        
                                     </select>
                             </div>
                         </div>
-                 </div> -->
-                --}}
+                 </div> 
+                
 
                 @if($job->section_visibility['profile_image'] == 'yes')
                     <div class="form-group">

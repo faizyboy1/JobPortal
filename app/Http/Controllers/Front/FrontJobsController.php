@@ -476,6 +476,8 @@ class FrontJobsController extends FrontBaseController
         $jobApplication->status_id = $applicationStatus->id;
         $jobApplication->email = $request->email;
         $jobApplication->phone = $request->phone;
+        $jobApplication->candidate_interview_slot = $request->interviewTimeSlot;
+        
         if ($request->has('gender')) {
             $jobApplication->gender = $request->gender;
         }
@@ -540,7 +542,7 @@ class FrontJobsController extends FrontBaseController
         
         // Notification::send($users, new NewJobApplication($jobApplication, $linkedin));
         
-        // Mail::send(new ReceivedApplication($jobApplication));
+        Mail::send(new ReceivedApplication($jobApplication));
 
         return Reply::dataOnly(['status' => 'success', 'msg' => __('modules.front.applySuccessMsg')]);
     }

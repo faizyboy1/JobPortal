@@ -124,6 +124,7 @@ return array (
     'all' => 'All',
     'allStatus' => 'All Status',
     'allLocation' => 'All Location',
+    'candidate_selected_slot' => 'Candidate Selected Slot',
     'allJobs' => 'All Jobs',
     'boardView' => 'Board View',
     'applicantNotes' => 'Applicant Notes',

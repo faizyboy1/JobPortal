@@ -73,6 +73,7 @@ function locationInfo() {
       $('.countries')
         .find('option:eq(0)')
         .html(selectCountry)
+        console.log({data});
 
       if (data.tp == 1) {
         $.each(data['result'], function(key, val) {
@@ -98,6 +99,7 @@ $(function() {
   loc.getCountries()
   $('body').on('change', '.countries', function(ev) {
     var countryId = $(this).val()
+    console.log({countryId})
     if (countryId != '0') {
       loc.getStates(countryId)
     } else {

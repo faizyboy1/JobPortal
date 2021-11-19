@@ -231,6 +231,7 @@ class InterviewScheduleController extends AdminBaseController
      * @return array
      */
     public function store(StoreRequest $request){
+        return Reply::dataOnly(["Candidate"=>$request->candidates]);
         abort_if(! $this->user->cans('add_schedule'), 403);
         $this->setZoomConfigs();
         $dateTime =  $request->scheduleDate.' '.$request->scheduleTime;

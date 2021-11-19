@@ -129,6 +129,18 @@
                     @endif
                 </p>
             </div>
+            
+            <div class="col-sm-12">
+                <div class="row">
+                    @if (!is_null($application->candidate_interview_slot))
+                        <div class="col-sm-12 col-md-4">
+                            <strong>@lang('modules.jobApplication.candidate_selected_slot')</strong><br>
+                            <p class="text-muted" id="candidate_interview_slot-{{ $application->id }}">{{ $application->candidate_interview_slot }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             @if (!is_null($application->cover_letter))
             <div class="col-sm-12">
                 <strong>@lang('modules.jobs.coverLetter')</strong><br>
@@ -328,6 +340,7 @@
                     $('#email-'+id).html(response.email);
                     $('#phone-'+id).html(response.phone);
                     $('#gender-'+id).html(response.gender);
+                    $('#candidate_interview_slot-'+id).html(response.candidate_interview_slot);
                     $('#dob-'+id).html(response.dob);
                     $('#country-'+id).html(response.country);
                     $('#state-'+id).html(response.state);
