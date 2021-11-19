@@ -482,7 +482,11 @@ select.form-control-lg:not([size]):not([multiple]) {
                 type: "POST",
                 file:true,
                 redirect: true,
+<<<<<<< HEAD
                 // data: $('#createCandidateForm').serialize(),
+=======
+                 data: $('#createForm').serialize(),
+>>>>>>> c313df182768d6e864f281d83429c715519ad767
                 success: function (response) {
                     if(response.status == 'success'){
                         var successMsg = '<div class="alert alert-success my-100" role="alert">' +

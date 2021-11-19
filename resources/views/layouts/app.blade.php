@@ -26,7 +26,9 @@
         @lang('app.superAdminPanel')
     @else
         @lang('app.adminPanel')
-    @endif | {{ __($pageTitle) }}</title>
+    @endif 
+    | {{ __($pageTitle) }} 
+</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -59,6 +61,12 @@
           href='//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css'>
 
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+    <script src="{{url('https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js')}}"></script>
+    <script src="{{url('https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js')}}"></script>
+    <script src="{{ asset('assets/node_modules/select2/dist/js/select2.full.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/node_modules/bootstrap-select/bootstrap-select.min.js') }}" type="text/javascript"></script>
+            
+
     <style>
         :root {
             --main-color: {{ $adminTheme->primary_color }};
@@ -150,6 +158,8 @@
 
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    
+   
 </head>
 <body class="hold-transition sidebar-mini @if($rtl == 1) rtl @endif">
 <!-- Site wrapper -->

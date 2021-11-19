@@ -34,18 +34,20 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    protected $appends =[
+    protected $appends = [
         'profile_image_url', 'mobile_with_code', 'formatted_mobile'
     ];
 
-    public function getProfileImageUrlAttribute(){
+    public function getProfileImageUrlAttribute()
+    {
         if (is_null($this->image)) {
             return asset('avatar.png');
         }
-        return asset_url('profile/'.$this->image);
+        return asset_url('profile/' . $this->image);
     }
 
-    public function role() {
+    public function role()
+    {
         return $this->hasOne(RoleUser::class, 'user_id');
     }
 
@@ -62,7 +64,7 @@ class User extends Authenticatable
             ->where('roles.name', 'admin')
             ->company();
 
-        if(!is_null($exceptId)){
+        if (!is_null($exceptId)) {
             $users->where('users.id', '<>', $exceptId);
         }
 
@@ -73,7 +75,7 @@ class User extends Authenticatable
     {
         return User::join('role_user', 'role_user.user_id', '=', 'users.id')
             ->join('roles', 'roles.id', '=', 'role_user.role_id')
-            ->select('users.id','users.company_id', 'users.name', 'users.email', 'users.calling_code', 'users.mobile', 'users.mobile_verified', 'users.created_at')
+            ->select('users.id', 'users.company_id', 'users.name', 'users.email', 'users.calling_code', 'users.mobile', 'users.mobile_verified', 'users.created_at')
             ->where('roles.name', 'admin')
             ->where('users.company_id', $companyId)
             ->get();
@@ -81,7 +83,7 @@ class User extends Authenticatable
 
     public function getMobileWithCodeAttribute()
     {
-        return substr($this->calling_code, 1).$this->mobile;
+        return substr($this->calling_code, 1) . $this->mobile;
     }
 
     public function getFormattedMobileAttribute()
@@ -89,7 +91,7 @@ class User extends Authenticatable
         if (!$this->calling_code) {
             return $this->mobile;
         }
-        return $this->calling_code.'-'.$this->mobile;
+        return $this->calling_code . '-' . $this->mobile;
     }
 
     public function routeNotificationForNexmo($notification)
@@ -102,5 +104,9 @@ class User extends Authenticatable
     }
     public function category(){
         return $this->belongsTo(Company_category::class);
+    }
+    public function candidateResume()
+    {
+        return $this->hasOne(CandidateResume::class);
     }
 }

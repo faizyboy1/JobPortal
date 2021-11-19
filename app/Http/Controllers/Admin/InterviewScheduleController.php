@@ -274,7 +274,7 @@ class InterviewScheduleController extends AdminBaseController
                     'user_id' => $this->user->id,
                     'comment' => $request->comment
                 ];
-
+    
                 $interviewSchedule->comments()->create($scheduleComment);
             }
             if(!empty($request->employees)){

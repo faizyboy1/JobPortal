@@ -10,9 +10,14 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use Illuminate\Support\Facades\Route;
+
 Auth::routes();
 Route::post('zoom-webhook', 'ZoomWebhookController@index')->name('zoom-webhook');
-
+// Route::get('candidate/resume', function () {
+//     return view('candidate.resume.index');
+// })->name('candidate.resume.index');
 //SAAS Front routes start
 Route::group(
     ['namespace' => 'SaasFront'],
@@ -53,13 +58,12 @@ Route::group(
         Route::get('/linkedin/callback', ['uses' => 'FrontJobsController@callback']);*/
         Route::get('auth/callback/{provider}', 'FrontJobsController@callback')->name('linkedinCallback');
         Route::get('auth/redirect/{provider}', 'FrontJobsController@redirect')->name('linkedinRedirect');
-
     }
 );
 
 //Front routes end
 // Paypal IPN Confirm
-Route::post('verify-billing-ipn', array('as' => 'verify-billing-ipn','uses' => 'PaypalIPNController@verifyBillingIPN'));
+Route::post('verify-billing-ipn', array('as' => 'verify-billing-ipn', 'uses' => 'PaypalIPNController@verifyBillingIPN'));
 Route::post('/save-invoices', ['as' => 'save_webhook', 'uses' => 'StripeWebhookController@saveInvoices']);
 Route::post('/save-razorpay-invoices', ['as' => 'save_razorpay-webhook', 'uses' => 'RazorpayWebhookController@saveInvoices']);
 Route::get('/check-razorpay-invoices', ['as' => 'check_razorpay-webhook', 'uses' => 'RazorpayWebhookController@checkInvoices']);
@@ -75,8 +79,11 @@ Route::group(['middleware' => 'auth'], function () {
         function () {
             Route::get('/dashboard', 'CandidateDashboardController@index')->name('dashboard');
             Route::resource('profile', 'CandidateProfileController');
+            Route::resource('resume', 'CandidateResumeController');
         }
     );
+
+
 
     // Admin routes
     Route::group(
@@ -167,14 +174,14 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::post('job-applications/updateIndex', 'AdminJobApplicationController@updateIndex')->name('job-applications.updateIndex');
                 Route::post('job-applications/archive-job-application/{application}', 'AdminJobApplicationController@archiveJobApplication')->name('job-applications.archiveJobApplication');
                 Route::post('job-applications/unarchive-job-application/{application}', 'AdminJobApplicationController@unarchiveJobApplication')->name('job-applications.unarchiveJobApplication');
-                Route::post('job-applications/add-skills/{applicationId}', 'AdminJobApplicationController@addSkills')->name('job-applications.addSkills');    
-                Route::post('job-applications/get-jobs/{jobCompanyId}', 'AdminJobApplicationController@getJob')->name('job-applications.get-jobs');    
+                Route::post('job-applications/add-skills/{applicationId}', 'AdminJobApplicationController@addSkills')->name('job-applications.addSkills');
+                Route::post('job-applications/get-jobs/{jobCompanyId}', 'AdminJobApplicationController@getJob')->name('job-applications.get-jobs');
                 Route::resource('job-applications', 'AdminJobApplicationController');
 
                 Route::get('applications-archive/data', 'AdminApplicationArchiveController@data')->name('applications-archive.data');
                 Route::get('applications-archive/export/{skill}', 'AdminApplicationArchiveController@export')->name('applications-archive.export');
                 Route::resource('applications-archive', 'AdminApplicationArchiveController');
-    
+
                 Route::get('job-onboard/data', 'AdminJobOnboardController@data')->name('job-onboard.data');
                 Route::get('job-onboard/send-offer/{id?}', 'AdminJobOnboardController@sendOffer')->name('job-onboard.send-offer');
                 Route::get('job-onboard/update-status/{id?}', 'AdminJobOnboardController@updateStatus')->name('job-onboard.update-status');
@@ -207,18 +214,18 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::resource('documents', 'AdminDocumentController');
             });
 
-            Route::get('paypal-recurring', array('as' => 'paypal-recurring','uses' => 'AdminPaypalController@payWithPaypalRecurrring',));
-            Route::get('paypal-invoice-download/{id}', array('as' => 'paypal.invoice-download','uses' => 'AdminPaypalController@paypalInvoiceDownload',));
+            Route::get('paypal-recurring', array('as' => 'paypal-recurring', 'uses' => 'AdminPaypalController@payWithPaypalRecurrring',));
+            Route::get('paypal-invoice-download/{id}', array('as' => 'paypal.invoice-download', 'uses' => 'AdminPaypalController@paypalInvoiceDownload',));
 
             // route for view/blade file
-            Route::get('paywithpaypal', array('as' => 'paywithpaypal','uses' => 'AdminPaypalController@payWithPaypal',));
+            Route::get('paywithpaypal', array('as' => 'paywithpaypal', 'uses' => 'AdminPaypalController@payWithPaypal',));
             // route for post request
-            Route::get('paypal/{packageId}/{type}', array('as' => 'paypal','uses' => 'AdminPaypalController@paymentWithpaypal',));
-            Route::get('paypal/cancel-subscription', array('as' => 'paypal.cancel-subscription','uses' => 'AdminPaypalController@cancelSubscription',));
-            Route::get('paypal/cancel-agreement', array('as' => 'paypal.cancel-agreement','uses' => 'AdminPaypalController@cancelAgreement',));
+            Route::get('paypal/{packageId}/{type}', array('as' => 'paypal', 'uses' => 'AdminPaypalController@paymentWithpaypal',));
+            Route::get('paypal/cancel-subscription', array('as' => 'paypal.cancel-subscription', 'uses' => 'AdminPaypalController@cancelSubscription',));
+            Route::get('paypal/cancel-agreement', array('as' => 'paypal.cancel-agreement', 'uses' => 'AdminPaypalController@cancelAgreement',));
 
             // route for check status responce
-            Route::get('paypal', array('as' => 'status','uses' => 'AdminPaypalController@getPaymentStatus',));
+            Route::get('paypal', array('as' => 'status', 'uses' => 'AdminPaypalController@getPaymentStatus',));
             Route::get('subscribe/invoice', 'ManageSubscriptionController@invoice')->name('subscribe.invoice');
             Route::get('subscribe/data', 'ManageSubscriptionController@data')->name('subscribe.data');
             Route::get('subscribe/history-data', 'ManageSubscriptionController@historyData')->name('subscribe.history-data');
@@ -227,8 +234,8 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('subscribe/select-package/{packageID}',  'ManageSubscriptionController@selectPackage')->name('subscribe.select-package');
             Route::get('subscribe/invoice-download/{invoice}', 'ManageSubscriptionController@download')->name('subscribe.invoice-download');
             Route::get('subscribe/default-invoice-download/{invoice}', 'ManageSubscriptionController@invoiceDownload')->name('subscribe.default-invoice-download');
-            Route::get('subscribe/paypal-invoice-download/{id}', array('as' => 'subscribe.paypal-invoice-download','uses' => 'ManageSubscriptionController@paypalInvoiceDownload',));
-            Route::get('subscribe/history', array('as' => 'subscribe.history','uses' => 'ManageSubscriptionController@history',));
+            Route::get('subscribe/paypal-invoice-download/{id}', array('as' => 'subscribe.paypal-invoice-download', 'uses' => 'ManageSubscriptionController@paypalInvoiceDownload',));
+            Route::get('subscribe/history', array('as' => 'subscribe.history', 'uses' => 'ManageSubscriptionController@history',));
             Route::get('subscribe/razorpay-invoice-download/{id}', 'ManageSubscriptionController@razorpayInvoiceDownload')->name('subscribe.razorpay-invoice-download');
             Route::post('subscribe/razorpay-payment',  'ManageSubscriptionController@razorpayPayment')->name('subscribe.razorpay-payment');
             Route::post('subscribe/razorpay-subscription',  'ManageSubscriptionController@razorpaySubscription')->name('subscribe.razorpay-subscription');
@@ -239,7 +246,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::resource('report', 'AdminReportController');
         }
     );
-    
+
     Route::group(
         ['namespace' => 'SuperAdmin', 'prefix' => 'super-admin', 'as' => 'superadmin.', 'middleware' => ['super-admin']],
         function () {
@@ -302,7 +309,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::resource('/sms-settings', 'SuperAdminSmsSettingsController', ['only' => ['index', 'update']]);
 
             Route::get('invoices/invoice-download/{invoice}', 'InvoiceController@download')->name('invoices.invoice-download');
-            Route::get('invoices/paypal-invoice-download/{id}', array('as' => 'invoices.paypal-invoice-download','uses' => 'InvoiceController@paypalInvoiceDownload',));
+            Route::get('invoices/paypal-invoice-download/{id}', array('as' => 'invoices.paypal-invoice-download', 'uses' => 'InvoiceController@paypalInvoiceDownload',));
             Route::get('invoices/razorpay-invoice-download/{id}', 'InvoiceController@razorpayInvoiceDownload')->name('invoices.razorpay-invoice-download');
             Route::get('invoices/data', 'InvoiceController@data')->name('invoices.data');
 
@@ -311,7 +318,7 @@ Route::group(['middleware' => 'auth'], function () {
             // Custom Modules
             Route::post('custom-modules/verify-purchase', ['uses' => 'CustomModuleController@verifyingModulePurchase'])->name('custom-modules.verify-purchase');
             Route::resource('custom-modules', 'CustomModuleController');
-            
+
             Route::get('superadmins/data', 'SuperadminController@data')->name('superadmins.data');
             Route::resource('superadmins', 'SuperadminController');
         }
