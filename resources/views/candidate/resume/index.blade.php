@@ -133,7 +133,7 @@
             </div>
             
         </div>
-        @if ($experiences)
+        @if (!is_null($experiences[0]->company_name))
         <div class="row d-flex p-4">
             <div  class=" ">
                 <p style="width:200px;border-bottom-width: 4px!important" class="border border-top-0 border-right-0 border-left-0 border-primary font-weight-bold text-primary">WORK EXPERIENCE</p>
@@ -154,7 +154,7 @@
             
         </div>
         @endif
-        @if ($certifications)
+        @if (!is_null($certifications[0]->certification_name))
         <div class="row d-flex p-4">
             <div  class="">
                 <p style="width:200px;border-bottom-width: 4px!important" class=" border border-top-0 border-right-0 border-left-0 border-primary font-weight-bold text-primary">CERTIFICATION</p>
@@ -174,7 +174,7 @@
             
         </div>
         @endif
-        @if ($awards)
+        @if (!is_null($awards[0]->award_name))
         <div class="row d-flex p-4">
             <div  class=" ">
                 <p style="width:200px;border-bottom-width: 4px!important" class="border border-top-0 border-right-0 border-left-0 border-primary font-weight-bold text-primary">AWARDS</p>
