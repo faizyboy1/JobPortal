@@ -15,9 +15,9 @@ class CreateCertificationsTable extends Migration
     {
         Schema::create('certifications', function (Blueprint $table) {
             $table->id();
-            $table->string('certification_name');
-            $table->integer('certification_year');
-            $table->string('certification_institute');
+            $table->string('certification_name')->nullable();
+            $table->integer('certification_year')->nullable();
+            $table->string('certification_institute')->nullable();
             $table->timestamps();
         });
     }

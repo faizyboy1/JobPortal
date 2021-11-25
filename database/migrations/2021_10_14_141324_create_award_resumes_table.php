@@ -15,9 +15,9 @@ class CreateAwardResumesTable extends Migration
     {
         Schema::create('award_resumes', function (Blueprint $table) {
             $table->id();
-            $table->string('award_name');
-            $table->integer('award_year');
-            $table->string('award_institute');
+            $table->string('award_name')->nullable();
+            $table->integer('award_year')->nullable();
+            $table->string('award_institute')->nullable();
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ class CreateCandidateResumesTable extends Migration
     {
         Schema::create('candidate_resumes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('first_name');
             $table->string('middle_name');
@@ -29,7 +29,7 @@ class CreateCandidateResumesTable extends Migration
             $table->string('country_code');
             $table->bigInteger('phone');
             $table->string('email');
-            $table->text('objective');
+            $table->text('objective')->nullable();
             $table->timestamps();
         });
     }
