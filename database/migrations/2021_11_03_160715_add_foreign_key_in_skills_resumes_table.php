@@ -16,7 +16,7 @@ class AddForeignKeyInSkillsResumesTable extends Migration
         Schema::enableForeignKeyConstraints();
         Schema::table('skills_resumes', function (Blueprint $table) {
             $table->bigInteger('candidate_resume_id')
-                ->unsigned()->after('id')->nullable();
+                ->unsigned()->after('id');
             $table->foreign('candidate_resume_id')->references('id')
                 ->on('candidate_resumes')->onUpdate('cascade')->onDelete('cascade');
         });

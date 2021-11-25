@@ -15,11 +15,11 @@ class CreateWorkExperiencesTable extends Migration
     {
         Schema::create('work_experiences', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name');
-            $table->string('start_date');
-            $table->string('end_date');
-            $table->string('job_title');
-            $table->text('job_description');
+            $table->string('company_name')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
+            $table->string('job_title')->nullable();
+            $table->text('job_description')->nullable();
             $table->timestamps();
         });
     }
