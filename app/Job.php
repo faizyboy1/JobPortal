@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Job extends Model
 {
-     use Sluggable;
+    use Sluggable;
 
     protected $dates = ['end_date', 'start_date'];
 
@@ -22,6 +22,7 @@ class Job extends Model
     protected $appends = [
         'active'
     ];
+    protected $fillable = ['title', 'job_description', 'job_requirement', 'total_positions', 'required_columns', 'meta_details',    'section_visibility'];
 
     protected static function boot()
     {

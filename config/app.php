@@ -148,6 +148,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -166,7 +167,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-       Macellan\Zip\ZipServiceProvider::class,
+        Macellan\Zip\ZipServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Froiden\RestAPI\Providers\ApiServiceProvider::class
 
@@ -221,36 +222,37 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Entrust'   => Trebol\Entrust\EntrustFacade::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
-       // 'Zip' => Macellan\Zip\ZipFacade::class,
+        // 'Zip' => Macellan\Zip\ZipFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        "ApiRoute" => Froiden\RestAPI\Facades\ApiRoute::class
+        "ApiRoute" => Froiden\RestAPI\Facades\ApiRoute::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
     'debug_blacklist' => [
-            '_ENV' => [
-                'APP_KEY',
-                'DB_PASSWORD',
-                'REDIS_PASSWORD',
-                'MAIL_PASSWORD',
-                'PUSHER_APP_KEY',
-                'PUSHER_APP_SECRET',
-                'FTP_PASSWORD',
-                'RAZORPAY_SECRET'
-            ],
-            '_SERVER' => [
-                'APP_KEY',
-                'DB_PASSWORD',
-                'REDIS_PASSWORD',
-                'MAIL_PASSWORD',
-                'PUSHER_APP_KEY',
-                'PUSHER_APP_SECRET',
-                'FTP_PASSWORD',
-                'RAZORPAY_SECRET'
-
-            ],
-            '_POST' => [
-                'password',
-            ],
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'PUSHER_APP_KEY',
+            'PUSHER_APP_SECRET',
+            'FTP_PASSWORD',
+            'RAZORPAY_SECRET'
         ],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'PUSHER_APP_KEY',
+            'PUSHER_APP_SECRET',
+            'FTP_PASSWORD',
+            'RAZORPAY_SECRET'
+
+        ],
+        '_POST' => [
+            'password',
+        ],
+    ],
 
 ];

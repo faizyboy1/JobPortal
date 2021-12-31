@@ -31,7 +31,12 @@
 @endphp    
 <div class="container">
         <div class="form__card">
-            
+            <form action="{{ route('candidate.file') }}" enctype="multipart/form-data"
+            method="POST">
+            @csrf
+                <input type="file" name="file">
+                <button type="submit" id="uploadResume" class=" submit button1 ">Upload Resume</button>
+            </form>
         <form id="submit-form" class="form" method="post" enctype="multipart/form-data"
         {{-- action="{{url('candidate/resume')}}" --}}
         >
@@ -57,6 +62,7 @@
                             class="form_group-input" 
                             placeholder="First Name*"
                             name="first_name"
+                            value={{ $name ? explode(" ",$name)[0]:"" }}
                             >
                             <label for="first" class="form_group-label">
                                 First Name<span style="color: red">*</span>
@@ -69,17 +75,20 @@
                             class="form_group-input" 
                             placeholder="Middle Name"
                             name="middle_name"
+                            value={{ (count(explode(" ",$name))-1>2) ?(explode(" ",$name)[1]):"" }}
                             >
                             <label for="middle" class="form_group-label">
                                 Middle Name
                             </label>
                         </div>
+                        
                         <div class="form__group">
                             
                             <input type="text" id="last_name"  
                             class="form_group-input" 
                             placeholder="Last Name*"
                             name="last_name"
+                            value={{$name && (count(explode(" ",$name))-1<2)  ? (explode(" ",$name)[1]) : (explode(" ",$name)[2]) }}
                             >
                             <label for="last" class="form_group-label">
                                 Last Name<span style="color: red">*</span>
@@ -93,6 +102,7 @@
                             class="form_group-input" 
                             placeholder="Address"
                             name="address"
+                            value={{ $address[0]  }}
                             >
                             <label for="address" class="form_group-label">
                                 Address
@@ -124,6 +134,8 @@
                         
 
                     </div>
+                    @dd($address)
+                    @dd($countries_list)
                     <div style="display: flex; justify-content:space-between; ">
                         <div class="form__group">
                             <select style="padding:10px" class="form_group-input" name="country_name" id="country">

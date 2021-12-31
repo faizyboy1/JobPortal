@@ -150,6 +150,23 @@
                                 </div>
 
                             </div>
+                            <div class="col-md-12">
+
+                                <div class="form-group">
+                                    <label for="startTime">@lang('modules.jobs.startTimeSlot')</label>
+                                    <input type="text" class="form-control" id="start-time-slot" value="{{$job->start_time_slot  }}" name="start_time_slot">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <div class="form-group">
+                                    <label for="endTime">@lang('modules.jobs.endTimeSlot')</label>
+                                    <input type="text" class="form-control" id="end-time-slot" value="{{$job->end_time_slot  }}" name="end_time_slot">
+                                </div>
+
+                            </div>
 
                             <div class="col-md-12">
 
@@ -278,6 +295,8 @@
         {
             $('#date-end').bootstrapMaterialDatePicker('setMinDate', date);
         });
+        $('#start-time-slot').bootstrapMaterialDatePicker({ date: false, format : 'HH:mm', shortTime:false });
+        $('#end-time-slot').bootstrapMaterialDatePicker({ date: false, format : 'HH:mm', shortTime:false });
 
         var jobDescription = $('#job_description').wysihtml5({
             "font-styles": true, //Font styling, e.g. h1, h2, etc. Default true

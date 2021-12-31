@@ -50,23 +50,22 @@ class FrontJobsController extends FrontBaseController
         }
     }
 
-    public function jobOpenings($slug=null)
+    public function jobOpenings($slug = null)
     {
+
         $company = Company::withoutGlobalScope('company');
-        if(!is_null($slug)) {
+        if (!is_null($slug)) {
             $company = $company->where('career_page_link', $slug)->first();
-            if(module_enabled('Subdomain'))
-            {
+            if (module_enabled('Subdomain')) {
                 $company = Company::where('sub_domain', request()->getHost())->first();
             }
         } else {
             $company = $this->global;
-            if(module_enabled('Subdomain'))
-            {
+            if (module_enabled('Subdomain')) {
                 $company = Company::where('sub_domain', request()->getHost())->first();
             }
         }
-        abort_if(is_null($company),404);
+        abort_if(is_null($company), 404);
 
         $activePackage = CompanyPackage::with('package')->where('company_id', $company->id)
             ->where('status', 'active')
@@ -82,51 +81,58 @@ class FrontJobsController extends FrontBaseController
         $this->jobs = Job::frontActiveJobs($company->id);
         $this->locations = JobLocation::withoutGlobalScope('company')->where('company_id', $company->id)->get();
         $this->categories = JobCategory::withoutGlobalScope('company')->where('company_id', $company->id)->get();
-
         $this->company = $this->global = $company;
         $this->companyName = $this->global->company_name;
         $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
         App::setLocale($this->global->locale);
         Carbon::setLocale($this->global->locale);
-        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
-        
+        setlocale(LC_TIME, $this->global->locale . '_' . strtoupper($this->global->locale));
+
         $this->jobs = Job::frontActiveJobs($company->id)->take($this->perPage);
         $this->jobCount = Job::frontActiveJobs($company->id)->count();
 
-        $this->locations = JobLocation::all();
-        $this->categories = JobCategory::all();
+        $this->locations = JobLocation::distinct()->get(['location']);
+        $this->categories = JobCategory::distinct()->get(['name']);
         $careerPackage = $this->company->package;
-        if(is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0){
+        if (is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0) {
             return redirect("/");
         }
+
+        //********************//
+        if (!$company->id || $company->id == 1) {
+            $this->jobs = Job::withoutGlobalScope('company')
+                ->get();
+            dd($this->jobs);
+
+            // dd(DB::table('jobs')->where('status', 'active')->whereDate('start_date', '<=', Carbon::now())
+            //     ->whereDate('end_date', '>=', Carbon::now())->get());
+        }
+        //********************//
 
         return view('front.job-openings', $this->data);
     }
 
-    public function job_companies($id='' ,$slug=null)
+    public function job_companies($id = '', $slug = null)
     {
-        
+
         $company = Company::withoutGlobalScope('company');
-        if(!is_null($slug)) {
+        if (!is_null($slug)) {
             $company = $company->where('career_page_link', $slug)->first();
-            if(module_enabled('Subdomain'))
-            {
+            if (module_enabled('Subdomain')) {
                 $company = Company::where('sub_domain', request()->getHost())->first();
             }
         } else {
             $company = $this->global;
-            if(module_enabled('Subdomain'))
-            {
+            if (module_enabled('Subdomain')) {
                 $company = Company::where('sub_domain', request()->getHost())->first();
             }
-            
         }
-        abort_if(is_null($company),404);
-        
-        
+        abort_if(is_null($company), 404);
+
+
         $activePackage = CompanyPackage::with('package')->where('company_id', $company->id)
             ->where('status', 'active')
-            ->where(function($query){
+            ->where(function ($query) {
                 $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
                 $query->orWhereNull('end_date');
             })->first();
@@ -145,41 +151,42 @@ class FrontJobsController extends FrontBaseController
         $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
         App::setLocale($this->global->locale);
         Carbon::setLocale($this->global->locale);
-        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
-        
+        setlocale(LC_TIME, $this->global->locale . '_' . strtoupper($this->global->locale));
+
         $this->jobs = Job::companyJobs($id)->take($this->perPage);
         $this->jobCount = Job::companyJobs($id)->count();
         // dd($this->jobs[0]->category);
-        
-        $this->locations = JobLocation::all();
-        $this->categories = JobCategory::all();
+
+        // $this->locations = JobLocation::distinct()->get(['location']);
+        // $this->categories = JobCategory::distinct()->get(['name']);
         $careerPackage = $this->company->package;
-        if(is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0){
+        if (is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0) {
             return redirect("/");
         }
 
         return view('front.job-openings', $this->data);
     }
 
-    function moreData(Request $request){
-        
-        if($request->ajax()){
+    function moreData(Request $request)
+    {
+
+        if ($request->ajax()) {
             $this->locations = JobLocation::all();
             $this->categories = JobCategory::all();
-               $job = $this->data($request);
-                $totalCurrentData = $request->totalCurrentData;
-                $take = $this->perPage + $totalCurrentData;
-                $this->allJobs = Job::activeJobs();
+            $job = $this->data($request);
+            $totalCurrentData = $request->totalCurrentData;
+            $take = $this->perPage + $totalCurrentData;
+            $this->allJobs = Job::activeJobs();
 
-                $this->jobs = $job->skip($totalCurrentData)->take($this->perPage);
-                $this->hideButton = 'no';
-                if($this->allJobs->count() < ($totalCurrentData+$this->perPage)){
-                    $this->hideButton = 'yes';
-                }
-                $this->job_current_count = $totalCurrentData+$this->perPage;
-                $this->jobCount = $this->allJobs->count();
-                $view = view('front.more_data', $this->data)->render();
-                return Reply::dataOnly(['status' => 'success', 'view' => $view,'data' => $this->data]);
+            $this->jobs = $job->skip($totalCurrentData)->take($this->perPage);
+            $this->hideButton = 'no';
+            if ($this->allJobs->count() < ($totalCurrentData + $this->perPage)) {
+                $this->hideButton = 'yes';
+            }
+            $this->job_current_count = $totalCurrentData + $this->perPage;
+            $this->jobCount = $this->allJobs->count();
+            $view = view('front.more_data', $this->data)->render();
+            return Reply::dataOnly(['status' => 'success', 'view' => $view, 'data' => $this->data]);
         }
     }
     public function jobOpeningSubDomain()
@@ -187,11 +194,11 @@ class FrontJobsController extends FrontBaseController
 
         $company = Company::where('sub_domain', request()->getHost())->first();
 
-        abort_if(is_null($company),404);
+        abort_if(is_null($company), 404);
 
         $activePackage = CompanyPackage::with('package')->where('company_id', $company->id)
             ->where('status', 'active')
-            ->where(function($query){
+            ->where(function ($query) {
                 $query->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
                 $query->orWhereNull('end_date');
             })->first();
@@ -209,10 +216,10 @@ class FrontJobsController extends FrontBaseController
         $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
         App::setLocale($this->global->locale);
         Carbon::setLocale($this->global->locale);
-        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
+        setlocale(LC_TIME, $this->global->locale . '_' . strtoupper($this->global->locale));
 
         $careerPackage = $this->company->package;
-        if(is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0){
+        if (is_null($activePackage) || is_null($activePackage->package) || $activePackage->package->career_website == 0) {
             return redirect("/");
         }
 
@@ -228,7 +235,7 @@ class FrontJobsController extends FrontBaseController
 
     public function jobDetail($slug)
     {
-        if(module_enabled('Subdomain')){
+        if (module_enabled('Subdomain')) {
             $company = Company::select('id', 'sub_domain')->where('sub_domain', $_SERVER['HTTP_HOST'])->first();
             Session::put('companyId', $company->id);
         }
@@ -238,18 +245,18 @@ class FrontJobsController extends FrontBaseController
             ->whereDate('end_date', '>=', Carbon::now())
             ->where('status', 'active');
 
-        if(module_enabled('Subdomain')){
+        if (module_enabled('Subdomain')) {
             $this->job->where('company_id', $company->id);
         }
 
-        $this->job=$this->job->firstOrFail();
+        $this->job = $this->job->firstOrFail();
 
         $this->linkedinGlobal = LinkedInSetting::first();
         Session::put('slug', $slug);
 
         $this->company = $this->global = $this->job->company;
 
-        if(!module_enabled('Subdomain')){
+        if (!module_enabled('Subdomain')) {
             Session::put('companyId', $this->job->company->id);
         }
 
@@ -258,18 +265,18 @@ class FrontJobsController extends FrontBaseController
             ->where('status', 'active')
             ->first();
 
-        abort_if(!$activePackage,404);
+        abort_if(!$activePackage, 404);
 
         $this->companyName = $this->global->company_name;
 
         $this->frontTheme = ThemeSetting::where('company_id', $this->company->id)->first();
         App::setLocale($this->global->locale);
         Carbon::setLocale($this->global->locale);
-        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
+        setlocale(LC_TIME, $this->global->locale . '_' . strtoupper($this->global->locale));
 
         $this->pageTitle = $this->job->title . ' - ' . $this->companyName;
-        $this->metaTitle = isset($this->job->meta_details['title'])?$this->job->meta_details['title']:'';
-        $this->metaDescription = isset($this->job->meta_details)?$this->job->meta_details['description']:'';
+        $this->metaTitle = isset($this->job->meta_details['title']) ? $this->job->meta_details['title'] : '';
+        $this->metaDescription = isset($this->job->meta_details) ? $this->job->meta_details['description'] : '';
         $this->metaImage = $this->job->company->logo_url;
         $this->pageUrl = request()->url();
 
@@ -300,11 +307,11 @@ class FrontJobsController extends FrontBaseController
     //         ->where('status', 'active');
     //         //  dd($this->data['job'],$id);
     //     }
-        
+
     //     if(module_enabled('Subdomain')){
     //         $this->job->where('company_id', $company->id);
     //     }
-        
+
     //     $this->job=$this->job->firstOrFail();
     //     dd($this->job);
 
@@ -356,13 +363,12 @@ class FrontJobsController extends FrontBaseController
         Session::put('expiresIn', $this->user->expiresIn);
 
         $company = Company::whereId($this->companyId)->first();
-        if(module_enabled('Subdomain')) {
+        if (module_enabled('Subdomain')) {
             $companySubdomain = $company->sub_domain;
-            $url = $request->getScheme().'://'.$companySubdomain.route('jobs.jobApply', $this->slug, false);
+            $url = $request->getScheme() . '://' . $companySubdomain . route('jobs.jobApply', $this->slug, false);
             return redirect()->to($url);
         }
         return redirect()->route('jobs.jobApply', ['companySlug' => $company->career_page_link, 'slug' => $this->slug]);
-
     }
 
     public function redirect($provider)
@@ -377,9 +383,10 @@ class FrontJobsController extends FrontBaseController
         return $this->jobApply($slug, $companyId);
     }
 
-    public function jobApply($slug, $companyId=null)
+    public function jobApply($slug, $companyId = null)
     {
-        if(module_enabled('Subdomain')) {
+
+        if (module_enabled('Subdomain')) {
             $company = Company::select('id', 'sub_domain')->where('sub_domain', $_SERVER['HTTP_HOST'])->first();
         }
 
@@ -387,7 +394,7 @@ class FrontJobsController extends FrontBaseController
             ->where(DB::raw('DATE(start_date)'), '<=', DB::raw('CURDATE()'))
             ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'));
 
-        if(module_enabled('Subdomain')){
+        if (module_enabled('Subdomain')) {
             $this->job->where('company_id', $company->id);
         }
         $this->job =    $this->job->firstOrFail();
@@ -398,22 +405,22 @@ class FrontJobsController extends FrontBaseController
         }
         $this->job = Job::with('company')->where('slug', $slug)->first();
         $this->company = $this->global = $this->job->company;
-         
+
         // Convert time into slots
-        $start_time=explode(":",$this->job->start_time_slot);
-        $end_time=explode(":",$this->job->end_time_slot);
-        $start_time_A=(int)$start_time[0];
-        $start_time_B=(int)$start_time[1];
+        $start_time = explode(":", $this->job->start_time_slot);
+        $end_time = explode(":", $this->job->end_time_slot);
+        $start_time_A = (int)$start_time[0];
+        $start_time_B = (int)$start_time[1];
 
-        $end_time_A=(int)$end_time[0];
-        $end_time_B=(int)$end_time[1];
+        $end_time_A = (int)$end_time[0];
+        $end_time_B = (int)$end_time[1];
 
-        $slots=[];
-        for($i=0;$i<=$end_time_A-$start_time_A;$i++){
-            if($i == $end_time_A-$start_time_A){
+        $slots = [];
+        for ($i = 0; $i <= $end_time_A - $start_time_A; $i++) {
+            if ($i == $end_time_A - $start_time_A) {
                 continue;
             }
-            $slots[$i]=$start_time_A+$i ." to ".($start_time_A+1+$i);
+            $slots[$i] = $start_time_A + $i . " to " . ($start_time_A + 1 + $i);
         }
         // if($start_time_A > $end_time_A){
         //     for($i=$start_time_A;$i<=$end_time_A;$i++){
@@ -427,9 +434,9 @@ class FrontJobsController extends FrontBaseController
         //     }
 
         // }
-        $this->slots1=$slots;
-        
-        
+        $this->slots1 = $slots;
+
+
 
 
 
@@ -447,10 +454,10 @@ class FrontJobsController extends FrontBaseController
         $this->frontTheme = ThemeSetting::where('company_id', $this->job->company_id)->first();
         App::setLocale($this->global->locale);
         Carbon::setLocale($this->global->locale);
-        setlocale(LC_TIME, $this->global->locale.'_'.strtoupper($this->global->locale));
+        setlocale(LC_TIME, $this->global->locale . '_' . strtoupper($this->global->locale));
         $this->applicationSetting = ApplicationSetting::where('company_id', $this->job->company->id)->first();
         $this->pageTitle = $this->job->title . ' - ' . $this->companyName;
-        
+
         return view('front.job-apply', $this->data);
     }
 
@@ -461,13 +468,13 @@ class FrontJobsController extends FrontBaseController
         //     ->where('status', 'active')
         //     ->where(DB::raw('DATE(end_date)'), '>=', DB::raw('CURDATE()'))
         //     ->first();
-        
+
         // if (!$activePackage) {
         //     return abort(404);
         // }
-            
+
         $applicationStatus = ApplicationStatus::where('company_id', $job->company_id)->firstOrFail();
-       
+
         $jobApplication = new JobApplication();
         $candidateInterviewTimeSlot = new CandidateInterviewTimeSlot();
         $jobApplication->full_name = $request->full_name;
@@ -477,7 +484,7 @@ class FrontJobsController extends FrontBaseController
         $jobApplication->email = $request->email;
         $jobApplication->phone = $request->phone;
         $jobApplication->candidate_interview_slot = $request->interviewTimeSlot;
-        
+
         if ($request->has('gender')) {
             $jobApplication->gender = $request->gender;
         }
@@ -499,12 +506,12 @@ class FrontJobsController extends FrontBaseController
         $jobApplication->column_priority = 0;
 
         if ($request->hasFile('photo')) {
-            $jobApplication->photo = Files::upload($request->photo,'candidate-photos');
+            $jobApplication->photo = Files::upload($request->photo, 'candidate-photos');
         }
         $jobApplication->save();
 
         if ($request->hasFile('resume')) {
-            $hashname = Files::upload($request->resume, 'documents/'.$jobApplication->id, null, null, false);
+            $hashname = Files::upload($request->resume, 'documents/' . $jobApplication->id, null, null, false);
             $jobApplication->documents()->create([
                 'company_id' => $job->company_id,
                 'name' => 'Resume',
@@ -517,14 +524,14 @@ class FrontJobsController extends FrontBaseController
         if ($request->linkedinPhoto) {
             $contents = file_get_contents($request->linkedinPhoto);
             $getfilename =  str_replace(' ', '_', $request->full_name);
-            $filename = $jobApplication->id.$getfilename.'.png';
-            Storage::put('candidate-photos/'.$filename, $contents);
+            $filename = $jobApplication->id . $getfilename . '.png';
+            Storage::put('candidate-photos/' . $filename, $contents);
             $jobApplication = JobApplication::find($jobApplication->id);
             $jobApplication->photo = $filename;
             $jobApplication->save();
         }
 
-        if($request->has('apply_type')){
+        if ($request->has('apply_type')) {
             $linkedin = true;
         }
 
@@ -539,9 +546,8 @@ class FrontJobsController extends FrontBaseController
                 $answer->save();
             }
         }
-        
-        // Notification::send($users, new NewJobApplication($jobApplication, $linkedin));
-        
+        Notification::send($users, new NewJobApplication($jobApplication, $linkedin));
+
         Mail::send(new ReceivedApplication($jobApplication));
 
         return Reply::dataOnly(['status' => 'success', 'msg' => __('modules.front.applySuccessMsg')]);
@@ -552,7 +558,7 @@ class FrontJobsController extends FrontBaseController
         $responseArr = [];
 
         $response = [
-            "status" => "success", 
+            "status" => "success",
             "tp" => 1,
             "msg" => "Countries fetched successfully."
         ];
@@ -564,7 +570,7 @@ class FrontJobsController extends FrontBaseController
                 foreach ($countriesArray as $country) {
                     $responseArr = Arr::add($responseArr, $country['id'], $country['name']);
                 }
-            break;
+                break;
             case 'getStates':
                 $statesArray = json_decode(file_get_contents(public_path('country-state-city/states.json')), true)['states'];
                 $countryId = $request->countryId;
@@ -576,9 +582,9 @@ class FrontJobsController extends FrontBaseController
                 foreach ($filteredStates as $state) {
                     $responseArr = Arr::add($responseArr, $state['id'], $state['name']);
                 }
-            break;
+                break;
         }
-        $response = Arr::add($response, "result", $responseArr);                
+        $response = Arr::add($response, "result", $responseArr);
 
         return response()->json($response);
     }
@@ -590,36 +596,37 @@ class FrontJobsController extends FrontBaseController
         });
         return current($result)['name'];
     }
-    
-    function searchJob(Request $request){
+
+    function searchJob(Request $request)
+    {
         $this->locations = JobLocation::all();
         $this->categories = JobCategory::all();
         $jobs = $this->data($request);
         $this->jobCount = $jobs->count();
         $this->jobs =  $jobs->take($this->perPage);
-         $this->job_current_count = $this->perPage;
-         $this->hideButton = 'no';
-         if($jobs->count() < ($this->perPage)){
-             $this->hideButton = 'yes';
-         }
+        $this->job_current_count = $this->perPage;
+        $this->hideButton = 'no';
+        if ($jobs->count() < ($this->perPage)) {
+            $this->hideButton = 'yes';
+        }
         $view = view('front.more_data', $this->data)->render();
-         return Reply::dataOnly(['status' => 'success', 'view' => $view,'data' => $this->data]);
-     }
+        return Reply::dataOnly(['status' => 'success', 'view' => $view, 'data' => $this->data]);
+    }
 
-     function data($request){
+    function data($request)
+    {
         $jobs = Job::where('status', 'active')
             ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
             ->where('end_date', '>=', Carbon::now()->format('Y-m-d'));
 
-        if ($request->category !== null && $request->category != 'all' ) {
-            $jobs= $jobs->where('category_id',$request->category);
+        if ($request->category !== null && $request->category != 'all') {
+            $jobs = $jobs->where('category_id', $request->category);
         }
 
-        if ($request->location_id !== null && $request->location_id != 'all' ) {
-            $jobs= $jobs->where('location_id', $request->location_id);
+        if ($request->location_id !== null && $request->location_id != 'all') {
+            $jobs = $jobs->where('location_id', $request->location_id);
         }
 
         return $jobs->get();
-     }
-    
+    }
 }

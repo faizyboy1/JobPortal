@@ -44,6 +44,7 @@ class Resume extends FormRequest
             'institute.*' => 'required',
             'language.*' => 'required',
             'skill.*' => 'required',
+
         ];
         if (
             array_pop($tempcompany_name) !== null ||
@@ -66,6 +67,7 @@ class Resume extends FormRequest
                 'institute.*' => 'required',
                 'language.*' => 'required',
                 'skill.*' => 'required',
+                'file' => 'required|mimes:pdf',
                 'company_name.*' => 'required',
                 'start_date.*' => 'required',
                 'end_date.*' => 'required',

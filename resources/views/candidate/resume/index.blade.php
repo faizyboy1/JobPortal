@@ -42,7 +42,9 @@
         color: #fff;
         border-color:#1579d0;
         box-shadow: 0 1px 1px rgb(0 0 0 / 8%);"
-         type="button" id="add-more">
+         type="button" id="add-more"
+         href="{{ URL::to('/candidate/pdf') }}"
+         >
             Download
         </a>
     </div>    

@@ -54,7 +54,6 @@ class NewJobApplication extends BaseNotification
     public function toMail($notifiable)
     {
         $content = __($this->jobApplication->full_name) . ' (' . $this->jobApplication->email . ') ' . __('email.newJobApplication.text') . ' - ' . ucwords($this->jobApplication->job->title);
-
         return (new MailMessage)
             ->subject(__('email.newJobApplication.subject'))
             ->greeting(__('email.hello') . ' ' . ucwords($notifiable->name) . '!')

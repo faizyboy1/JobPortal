@@ -92,16 +92,16 @@ class SaasFrontController extends SaasFrontBaseController
 
     public function companyRegister(RegisterForm $request)
     {
-
         $company = new Company();
         try {
             $company->company_name = $request->company_name;
             $company->category_id = $request->ctg_id;
+            $company->company_email = $request->email;
             $company->career_page_link = str_slug($request->career_page_link, '-');
             $company->job_opening_text = 'Welcome!';
             $company->job_opening_title = 'We want people to thrive. We believe you do your best work when you feel your best.';
             $company->timezone = 'Asia/Karachi';
-            if (module_enabled('Subdomain')){
+            if (module_enabled('Subdomain')) {
                 $company->sub_domain = $request->sub_domain;
             }
 

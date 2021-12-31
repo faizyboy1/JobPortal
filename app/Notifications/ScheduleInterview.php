@@ -12,14 +12,14 @@ use Illuminate\Notifications\Messages\NexmoMessage;
 class ScheduleInterview extends BaseNotification
 {
     use SmsSettings;
-    private $jobApplication, $smsSetting,$meetings;
+    private $jobApplication, $smsSetting, $meetings;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(JobApplication $jobApplication , $meetings)
+    public function __construct(JobApplication $jobApplication, $meetings)
     {
         parent::__construct();
         $this->jobApplication = $jobApplication;
@@ -58,21 +58,19 @@ class ScheduleInterview extends BaseNotification
             ->greeting(__('email.hello') . ' ' . ucwords($notifiable->name) . '!')
             ->line(__($this->jobApplication->full_name) . ' ' . __('email.interviewSchedule.text') . ' - ' . ucwords($this->jobApplication->job->title))
             ->action(__('email.interviewSchedule.response') . ' ' . __('email.loginDashboard'), getDomainSpecificUrl(route('login'), $notifiable->company));
-            if($this->meetings != null){
-                $emailContent = $emailContent->line(__('modules.zoommeeting.meetingPassword') . ' - ' . ucwords($this->meetings->password));
-                if( $notifiable->id == $this->meetings->created_by ){
+        if ($this->meetings != null) {
+            $emailContent = $emailContent->line(__('modules.zoommeeting.meetingPassword') . ' - ' . ucwords($this->meetings->password));
+            if ($notifiable->id == $this->meetings->created_by) {
                 $emailContent = $emailContent->action(__('modules.zoommeeting.startUrl'), getDomainSpecificUrl($this->meetings->start_link));
-                }else{
-                    $emailContent = $emailContent->action(__('modules.zoommeeting.joinUrl'), getDomainSpecificUrl($this->meetings->join_link));
-                }
-
-            }else{
-                $emailContent =  $emailContent->line(__('modules.interviewSchedule.interviewType').' - ' . __('modules.meetings.offline'));
+            } else {
+                $emailContent = $emailContent->action(__('modules.zoommeeting.joinUrl'), getDomainSpecificUrl($this->meetings->join_link));
             }
-    
-            $emailContent = $emailContent->line(__('email.thankyouNote'));
-            return $emailContent;
-            
+        } else {
+            $emailContent =  $emailContent->line(__('modules.interviewSchedule.interviewType') . ' - ' . __('modules.meetings.offline'));
+        }
+
+        $emailContent = $emailContent->line(__('email.thankyouNote'));
+        return $emailContent;
     }
 
     /**

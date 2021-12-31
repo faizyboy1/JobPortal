@@ -167,7 +167,7 @@
                 {{--
                 @if(!is_null($activePackage))
                 --}}
-                    <li class="nav-item has-treeview @if(\Request()->is('admin/subscribe*'))active menu-open @endif">
+                    {{-- <li class="nav-item has-treeview @if(\Request()->is('admin/subscribe*'))active menu-open @endif">
                         <a href="#" class="nav-link">
                             <i class="nav-icon icon-settings"></i>
                             <p>
@@ -189,7 +189,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> --}}
                     {{--
                     @endif
                     --}}

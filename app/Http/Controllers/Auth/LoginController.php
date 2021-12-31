@@ -55,16 +55,14 @@ class LoginController extends Controller
             return redirect('verify-purchase');
         }
 
-        if(auth()->check()) {
-            if(auth()->user()->is_superadmin) {
+        if (auth()->check()) {
+            if (auth()->user()->is_superadmin) {
                 return redirect(route('superadmin.dashboard.index'));
-            }
-            elseif(!auth()->user()->is_superadmin && auth()->user()->company_id == null) {
+            } elseif (!auth()->user()->is_superadmin && auth()->user()->company_id == null) {
                 return redirect(route('candidate.dashboard'));
             }
             return redirect('admin/dashboard');
         }
-
         $setting = $this->global;
         $global = $this->global;
         $frontTheme = ThemeSetting::whereNull('company_id')->first();
@@ -109,10 +107,9 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         $user = auth()->user();
-        if($user->is_superadmin) {
+        if ($user->is_superadmin) {
             return 'super-admin/dashboard';
-        }
-        elseif($user->roles[0]->name == 'candidate') {
+        } elseif ($user->roles[0]->name == 'candidate') {
             return 'candidate/dashboard';
         }
         return 'admin/dashboard';
@@ -135,8 +132,9 @@ class LoginController extends Controller
         return redirect(route('login'));
     }
 
-    private function rulesValidate($user){
-        if (Str::contains(url()->previous(),'super-admin-login')) {
+    private function rulesValidate($user)
+    {
+        if (Str::contains(url()->previous(), 'super-admin-login')) {
             $rules = [
                 $this->username() => [
                     'required',
@@ -147,7 +145,7 @@ class LoginController extends Controller
                 ],
                 'password' => 'required|string',
             ];
-        }else{
+        } else {
             $company = getCompanyBySubDomain();
 
             $rules = [

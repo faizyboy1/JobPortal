@@ -72,7 +72,7 @@
                         <a href="{{ route('admin.jobs.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-info text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ $activeJobs->count() }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.totalOpenings')</h6>
                                 </div>
                             </div>
@@ -83,7 +83,7 @@
                         <a href="{{ route('admin.job-applications.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-primary text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ $interviewData->count() }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.totalApplications')</h6>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@
                         <a href="{{ route('admin.job-applications.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-success text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ $interviewData->where('status','hired')->count() }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.totalHired')</h6>
                                 </div>
                             </div>
@@ -105,7 +105,7 @@
                         <a href="{{ route('admin.job-applications.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-dark text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ $interviewData->where('status','rejected')->count() }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.totalRejected')</h6>
                                 </div>
                             </div>
@@ -116,14 +116,14 @@
                         <a href="{{ route('admin.job-applications.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-danger text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ $interviewData->where('status','pending')->count() }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.newApplications')</h6>
                                 </div>
                             </div>
                         </a>
                     </div>
                     <!-- Column -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <a href="{{ route('admin.job-applications.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-warning text-center rounded">
@@ -132,13 +132,13 @@
                                 </div>
                             </div>
                         </a>
-                    </div>
+                    </div> --}}
                     <!-- Column -->
                     <div class="col-md-6">
                         <a href="{{ route('admin.interview-schedule.index') }}" target="_blank">
                             <div class="card">
                                 <div class="box bg-primary text-center rounded">
-                                    <h1 class="font-light text-white">123</h1>
+                                    <h1 class="font-light text-white">{{ sizeof($todayInterview)  }}</h1>
                                     <h6 class="text-white">@lang('modules.dashboard.todayInterview')</h6>
                                 </div>
                             </div>

@@ -62,7 +62,6 @@
 
 <body class="hold-transition login-page"
       style="background-image:url({{ module_enabled('Subdomain')?$setting->login_background_image_url:$headerData->login_background_image_url }})">
-
 <div class="login-box" >
     <div class="login-logo">
         <a href="{{ url('/')}}" >

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: DEXTER
@@ -13,9 +14,10 @@ use Illuminate\Mail\MailServiceProvider;
 use Illuminate\Support\Facades\Config;
 use App\GlobalSetting;
 
-trait SmtpSettings{
-
-    public function setMailConfigs(){
+trait SmtpSettings
+{
+    public function setMailConfigs()
+    {
         $smtpSetting = EmailSetting::first();
         $settings = GlobalSetting::first();
         $company = company();
@@ -30,23 +32,22 @@ trait SmtpSettings{
             Config::set('mail.username', $smtpSetting->mail_username);
             Config::set('mail.password', $smtpSetting->mail_password);
             Config::set('mail.encryption', $smtpSetting->mail_encryption);
-            Config::set('mail.from.name', $smtpSetting->mail_from_name); 
-            Config::set('mail.from.address', $smtpSetting->mail_from_email);  
+            Config::set('mail.from.name', $smtpSetting->mail_from_name);
+            Config::set('mail.from.address', $smtpSetting->mail_from_email);
         }
 
         Config::set('mail.reply_to.name', $companyName);
         Config::set('mail.reply_to.address', $companyEmail);
         Config::set('mail.from.name', $companyName);
 
-         if (\config('mail.verified') === true) {
-             Config::set('mail.from.address', $smtpSetting->mail_from_email);
-         } else {
-             Config::set('mail.from.address', $companyEmail);
-         }
+        if (\config('mail.verified') === true) {
+            Config::set('mail.from.address', $smtpSetting->mail_from_email);
+        } else {
+            Config::set('mail.from.address', $companyEmail);
+        }
         Config::set('app.name', $companyName);
-//        Config::set('mail.from.name', $company[0]);
+        //        Config::set('mail.from.name', $company[0]);
 
         (new MailServiceProvider(app()))->register();
     }
-
 }

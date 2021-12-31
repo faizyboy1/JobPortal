@@ -33,7 +33,7 @@ use Illuminate\Support\Arr;
 
 class InterviewScheduleController extends AdminBaseController
 {
-    Use ZoomSettings;
+    use ZoomSettings;
     public function __construct()
     {
         parent::__construct();
@@ -48,36 +48,35 @@ class InterviewScheduleController extends AdminBaseController
      */
     public function index(Request $request)
     {
-        abort_if(! $this->user->cans('view_schedule'), 403);
+        abort_if(!$this->user->cans('view_schedule'), 403);
 
         $currentDate = Carbon::now($this->global->timezone)->format('Y-m-d'); // Current Date
 
         // Get All schedules
-        $this->schedules = InterviewSchedule::
-            select('interview_schedules.id', 'interview_schedules.job_application_id', 'interview_schedules.schedule_date', 'interview_schedules.status')
+        $this->schedules = InterviewSchedule::select('interview_schedules.id', 'interview_schedules.job_application_id', 'interview_schedules.schedule_date', 'interview_schedules.status')
             ->with(['employees', 'jobApplication:id,job_id,full_name', 'jobApplication.job:id,title'])
-            ->join('job_applications', 'job_applications.id','interview_schedules.job_application_id')
+            ->join('job_applications', 'job_applications.id', 'interview_schedules.job_application_id')
             ->whereNull('job_applications.deleted_at')
             ->where('status', 'pending')
             ->orderBy('schedule_date')
             ->get();
 
         // Filter upcoming schedule
-        $upComingSchedules = $this->schedules->filter(function ($value, $key)use($currentDate) {
+        $upComingSchedules = $this->schedules->filter(function ($value, $key) use ($currentDate) {
             return $value->schedule_date >= $currentDate;
         });
 
         $upcomingData = [];
 
         // Set array for upcoming schedule
-        foreach($upComingSchedules as $upComingSchedule){
+        foreach ($upComingSchedules as $upComingSchedule) {
             $dt = $upComingSchedule->schedule_date->format('Y-m-d');
             $upcomingData[$dt][] = $upComingSchedule;
         }
 
         $this->upComingSchedules = $upcomingData;
 
-        if($request->ajax()){
+        if ($request->ajax()) {
             $viewData = view('admin.interview-schedule.upcoming-schedule', $this->data)->render();
             return Reply::dataOnly(['data' => $viewData, 'scheduleData' => $this->schedules]);
         }
@@ -91,8 +90,9 @@ class InterviewScheduleController extends AdminBaseController
      * @return string
      * @throws \Throwable
      */
-    public function create(Request $request){
-        abort_if(! $this->user->cans('add_schedule'), 403);
+    public function create(Request $request)
+    {
+        abort_if(!$this->user->cans('add_schedule'), 403);
         $this->zoom_setting = ZoomSetting::first();
         $this->candidates = JobApplication::all();
         $this->users = User::with('company')->company()->get();
@@ -105,8 +105,9 @@ class InterviewScheduleController extends AdminBaseController
      * @return string
      * @throws \Throwable
      */
-    public function table(Request $request){
-        abort_if(! $this->user->cans('add_schedule'), 403);
+    public function table(Request $request)
+    {
+        abort_if(!$this->user->cans('add_schedule'), 403);
         $this->candidates = JobApplication::all();
         $this->users = User::with('company')->company()->get();
         return view('admin.interview-schedule.table', $this->data);
@@ -117,32 +118,33 @@ class InterviewScheduleController extends AdminBaseController
      * @return mixed
      * @throws \Exception
      */
-    public function data(Request $request){
-        abort_if(! $this->user->cans('view_schedule'), 403);
+    public function data(Request $request)
+    {
+        abort_if(!$this->user->cans('view_schedule'), 403);
 
-        $shedule = InterviewSchedule::select('interview_schedules.id','interview_schedules.interview_type','interview_schedule_employees.user_id as employee_id','zoom_meetings.start_link','job_applications.full_name','zoom_meetings.meeting_name','zoom_meetings.created_by','interview_schedules.status', 'interview_schedules.schedule_date')
+        $shedule = InterviewSchedule::select('interview_schedules.id', 'interview_schedules.interview_type', 'interview_schedule_employees.user_id as employee_id', 'zoom_meetings.start_link', 'job_applications.full_name', 'zoom_meetings.meeting_name', 'zoom_meetings.created_by', 'interview_schedules.status', 'interview_schedules.schedule_date')
             ->leftjoin('job_applications', 'job_applications.id', 'interview_schedules.job_application_id')
             ->leftjoin('interview_schedule_employees', 'interview_schedule_employees.interview_schedule_id', 'interview_schedules.id')
             ->leftjoin('zoom_meetings', 'zoom_meetings.id', 'interview_schedules.meeting_id')
             ->whereNull('job_applications.deleted_at');
-            $this->zoomSetting = ZoomSetting::first();
+        $this->zoomSetting = ZoomSetting::first();
         // Filter by status
-        if($request->status != 'all' && $request->status != ''){
+        if ($request->status != 'all' && $request->status != '') {
             $shedule = $shedule->where('interview_schedules.status', $request->status);
         }
 
         // Filter By candidate
-        if($request->applicationID != 'all' && $request->applicationID != ''){
+        if ($request->applicationID != 'all' && $request->applicationID != '') {
             $shedule = $shedule->where('job_applications.id', $request->applicationID);
         }
 
         // Filter by StartDate
-        if($request->startDate !== null && $request->startDate != 'null'){
+        if ($request->startDate !== null && $request->startDate != 'null') {
             $shedule = $shedule->where(DB::raw('DATE(interview_schedules.`schedule_date`)'), '>=', "$request->startDate");
         }
 
         // Filter by EndDate
-        if($request->endDate !== null && $request->endDate != 'null'){
+        if ($request->endDate !== null && $request->endDate != 'null') {
             $shedule = $shedule->where(DB::raw('DATE(interview_schedules.`schedule_date`)'), '<=', "$request->endDate");
         }
 
@@ -156,21 +158,21 @@ class InterviewScheduleController extends AdminBaseController
                 $action = '';
 
 
-                if( $this->user->cans('view_schedule')){
-                    $action.= '<a href="javascript:;" data-row-id="' . $row->id . '" class="btn btn-info btn-circle view-data"
-                      data-toggle="tooltip" data-original-title="'.__('app.view').'"><i class="fa fa-search" aria-hidden="true"></i></a>';
+                if ($this->user->cans('view_schedule')) {
+                    $action .= '<a href="javascript:;" data-row-id="' . $row->id . '" class="btn btn-info btn-circle view-data"
+                      data-toggle="tooltip" data-original-title="' . __('app.view') . '"><i class="fa fa-search" aria-hidden="true"></i></a>';
                 }
-                if( $this->user->cans('edit_schedule')){
-                    $action.= '<a href="javascript:;" style="margin-left:4px" data-row-id="' . $row->id . '" class="btn btn-primary btn-circle edit-data"
-                      data-toggle="tooltip" data-original-title="'.__('app.edit').'"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
-                }
-
-                if( $this->user->cans('delete_schedule')){
-                    $action.= ' <a href="javascript:;" class="btn btn-danger btn-circle sa-params"
-                      data-toggle="tooltip" data-row-id="' . $row->id . '" data-original-title="'.__('app.delete').'"><i class="fa fa-times" aria-hidden="true"></i></a>';
+                if ($this->user->cans('edit_schedule')) {
+                    $action .= '<a href="javascript:;" style="margin-left:4px" data-row-id="' . $row->id . '" class="btn btn-primary btn-circle edit-data"
+                      data-toggle="tooltip" data-original-title="' . __('app.edit') . '"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
                 }
 
-                if ($row->interview_type == 'online' && $this->zoom_setting->status == 'active' && $this->user->id == $row->created_by && $row->employee_id == $this->user->id ) {
+                if ($this->user->cans('delete_schedule')) {
+                    $action .= ' <a href="javascript:;" class="btn btn-danger btn-circle sa-params"
+                      data-toggle="tooltip" data-row-id="' . $row->id . '" data-original-title="' . __('app.delete') . '"><i class="fa fa-times" aria-hidden="true"></i></a>';
+                }
+
+                if ($row->interview_type == 'online' && $this->zoom_setting->status == 'active' && $this->user->id == $row->created_by && $row->employee_id == $this->user->id) {
                     $action .= ' <a target="_blank" href="' . $url . '"  class="btn btn-success btn-circle fa fa-play "
                       data-toggle="tooltip" data-row-id="' . $row->id . '" data-original-title="' . __('modules.zoommeeting.startMeeting') . '"><i class="fa fa-play"></i></a>';
                 }
@@ -191,17 +193,17 @@ class InterviewScheduleController extends AdminBaseController
                 return Carbon::parse($row->schedule_date)->format('d F, Y H:i a');
             })
             ->editColumn('status', function ($row) {
-                if($row->status == 'pending'){
-                    return '<label class="badge bg-warning">'.__('app.pending').'</label>';
+                if ($row->status == 'pending') {
+                    return '<label class="badge bg-warning">' . __('app.pending') . '</label>';
                 }
-                if($row->status == 'hired'){
-                    return '<label class="badge bg-success">'.__('app.hired').'</label>';
+                if ($row->status == 'hired') {
+                    return '<label class="badge bg-success">' . __('app.hired') . '</label>';
                 }
-                if($row->status == 'canceled'){
-                    return '<label class="badge bg-danger">'.__('app.canceled').'</label>';
+                if ($row->status == 'canceled') {
+                    return '<label class="badge bg-danger">' . __('app.canceled') . '</label>';
                 }
-                if($row->status == 'rejected'){
-                    return '<label class="badge bg-danger">'.__('app.rejected').'</label>';
+                if ($row->status == 'rejected') {
+                    return '<label class="badge bg-danger">' . __('app.rejected') . '</label>';
                 }
             })
             ->rawColumns(['action', 'status', 'full_name', 'checkbox'])
@@ -213,14 +215,15 @@ class InterviewScheduleController extends AdminBaseController
      * @return string
      * @throws \Throwable
      */
-    public function edit($id){
-        abort_if(! $this->user->cans('edit_schedule'), 403);
+    public function edit($id)
+    {
+        abort_if(!$this->user->cans('edit_schedule'), 403);
         $this->zoom_setting = ZoomSetting::first();
         $this->candidates = JobApplication::all();
         $this->users = User::with('company')->company()->get();
-        $this->schedule = InterviewSchedule::with(['jobApplication', 'user','meeting'])->find($id);
+        $this->schedule = InterviewSchedule::with(['jobApplication', 'user', 'meeting'])->find($id);
         $this->comment = ScheduleComments::where('interview_schedule_id', $this->schedule->id)
-                                            ->where('user_id', $this->user->id)->first();
+            ->where('user_id', $this->user->id)->first();
         $this->employeeList = json_encode($this->schedule->employee->pluck('user_id')->toArray());
 
         return view('admin.interview-schedule.edit', $this->data)->render();
@@ -230,64 +233,65 @@ class InterviewScheduleController extends AdminBaseController
      * @param StoreRequest $request
      * @return array
      */
-    public function store(StoreRequest $request){
-        return Reply::dataOnly(["Candidate"=>$request->candidates]);
-        abort_if(! $this->user->cans('add_schedule'), 403);
+    public function store(StoreRequest $request)
+    {
+        abort_if(!$this->user->cans('add_schedule'), 403);
         $this->setZoomConfigs();
-        $dateTime =  $request->scheduleDate.' '.$request->scheduleTime;
+        $dateTime =  $request->scheduleDate . ' ' . $request->scheduleTime;
         $dateTime = Carbon::createFromFormat('Y-m-d H:i', $dateTime);
 
         foreach ($request->candidates as $candidateId) {
-            if($request->interview_type == 'online'){
+            if ($request->interview_type == 'online') {
 
-            $data = $request->all();
-            $meeting = new ZoomMeeting();
-            $data['meeting_name'] = $request->meeting_title;
-            $data['start_date_time'] = $dateTime;
-            $data['end_date_time'] = $request->end_date . ' ' . $request->end_time;
-            $meeting = $meeting->create($data);
-            $host = User::find($request->create_by);
-            $user = Zoom::user()->find('me');
-            $meetings = $this->createMeeting($user, $meeting,  null, $host);
-         }
-         else{
-             $meetings = '';
-         }
+                $data = $request->all();
+                $meeting = new ZoomMeeting();
+                $data['meeting_name'] = $request->meeting_title;
+                $data['start_date_time'] = $dateTime;
+                $data['end_date_time'] = $request->end_date . ' ' . $request->end_time;
+                $meeting = $meeting->create($data);
+                $host = User::find($request->create_by);
+                $user = Zoom::user()->find('me');
+                $meetings = $this->createMeeting($user, $meeting,  null, $host);
+            } else {
+                $meetings = '';
+            }
 
             // store Schedule
             $interviewSchedule = new InterviewSchedule();
             $interviewSchedule->job_application_id = $candidateId;
             $interviewSchedule->schedule_date = $dateTime;
             $interviewSchedule->interview_type = ($request->has('interview_type')) ? $request->interview_type : 'offline';
-            $interviewSchedule->meeting_id = ($meetings!= '') ? $meetings->id: null;
+            $interviewSchedule->meeting_id = ($meetings != '') ? $meetings->id : null;
             $interviewSchedule->save();
 
-            $jobApplicationStatus = ApplicationStatus::where('status','interview')->first();
+            $jobApplicationStatus = ApplicationStatus::where('status', 'interview')->first();
             // Update Schedule Status
             $jobApplication = $interviewSchedule->jobApplication;
             $jobApplication->status_id = $jobApplicationStatus->id;
             $jobApplication->save();
 
-            if($request->comment){
+            if ($request->comment) {
                 $scheduleComment = [
                     'interview_schedule_id' => $interviewSchedule->id,
                     'user_id' => $this->user->id,
                     'comment' => $request->comment
                 ];
-    
+
                 $interviewSchedule->comments()->create($scheduleComment);
             }
-            if(!empty($request->employees)){
+
+            if (!empty($request->employees)) {
                 $interviewSchedule->employees()->attach($request->employees, ['company_id' => $this->user->company_id]);
-                Notification::send($interviewSchedule->employees, new ScheduleInterview($jobApplication,$meetings));
+                // dd($interviewSchedule->employees);
+                Notification::send($interviewSchedule->employees, new ScheduleInterview($jobApplication, $meetings));
             }
             // mail to candidate for inform interview schedule
-            Notification::send($jobApplication, new CandidateScheduleInterview($jobApplication, $interviewSchedule,$meetings));
+            Notification::send($jobApplication, new CandidateScheduleInterview($jobApplication, $interviewSchedule, $meetings));
         }
 
-        return Reply::redirect(route('admin.interview-schedule.index'), __('menu.interviewSchedule').' '.__('messages.createdSuccessfully'));
+        return Reply::redirect(route('admin.interview-schedule.index'), __('menu.interviewSchedule') . ' ' . __('messages.createdSuccessfully'));
     }
-    public function createMeeting($user, ZoomMeeting $meeting, $id, $meetingId = null, $host=null)
+    public function createMeeting($user, ZoomMeeting $meeting, $id, $meetingId = null, $host = null)
     {
         $this->setZoomConfigs();
         // create meeting using zoom API
@@ -305,7 +309,7 @@ class InterviewScheduleController extends AdminBaseController
             ]
         ];
 
-        if($host){
+        if ($host) {
             $commonSettings['alternative_host'] = [$host->email];
         }
 
@@ -325,8 +329,9 @@ class InterviewScheduleController extends AdminBaseController
 
         return $meeting;
     }
-    public function changeStatus(Request $request){
-        abort_if(! $this->user->cans('add_schedule'), 403);
+    public function changeStatus(Request $request)
+    {
+        abort_if(!$this->user->cans('add_schedule'), 403);
 
         $this->commonChangeStatusFunction($request->id, $request);
 
@@ -338,31 +343,32 @@ class InterviewScheduleController extends AdminBaseController
      * @param $id
      * @return array
      */
-    public function update(UpdateRequest $request, $id){
-        abort_if(! $this->user->cans('add_schedule'), 403);
+    public function update(UpdateRequest $request, $id)
+    {
+        abort_if(!$this->user->cans('add_schedule'), 403);
 
         $this->setZoomConfigs();
-        $dateTime =  $request->scheduleDate.' '.$request->scheduleTime;
+        $dateTime =  $request->scheduleDate . ' ' . $request->scheduleTime;
         $dateTime = Carbon::createFromFormat('Y-m-d H:i', $dateTime);
 
         // Update interview Schedule
-        $interviewSchedule = InterviewSchedule::select('id', 'job_application_id', 'schedule_date', 'status','meeting_id')
-                            ->with([
-                                'jobApplication:id,full_name,email,job_id,status_id',
-                                'employees',
-                                'comments'
-                            ])
-                            ->where('id', $id)->first();
+        $interviewSchedule = InterviewSchedule::select('id', 'job_application_id', 'schedule_date', 'status', 'meeting_id')
+            ->with([
+                'jobApplication:id,full_name,email,job_id,status_id',
+                'employees',
+                'comments'
+            ])
+            ->where('id', $id)->first();
         $interviewSchedule->schedule_date = $dateTime;
         $interviewSchedule->interview_type = ($request->has('interview_type')) ? $request->interview_type : 'offline';
-        if($request->interview_type == 'offline'){
+        if ($request->interview_type == 'offline') {
             $interviewSchedule->meeting_id = null;
-            ZoomMeeting::where('id',$interviewSchedule->meeting_id)->delete();
-            $meeting ='';
+            ZoomMeeting::where('id', $interviewSchedule->meeting_id)->delete();
+            $meeting = '';
         }
         $interviewSchedule->save();
 
-        if($request->comment){
+        if ($request->comment) {
             $scheduleComment = [
                 'comment' => $request->comment
             ];
@@ -377,7 +383,7 @@ class InterviewScheduleController extends AdminBaseController
         //zoom meeting update
         $host = User::find($request->create_by);
         $user = Zoom::user()->find('me');
-        if($request->interview_type == 'online'){
+        if ($request->interview_type == 'online') {
 
             $meeting = is_null($interviewSchedule->meeting_id) ? new ZoomMeeting() : ZoomMeeting::find($interviewSchedule->meeting_id);
             $data = $request->all();
@@ -388,28 +394,27 @@ class InterviewScheduleController extends AdminBaseController
                 $meeting = $meeting->create($data);
             } else {
                 $meeting->update($data);
-
             }
-           $meetings = $this->createMeeting($user, $meeting, $interviewSchedule->meeting_id, null, $host);
+            $meetings = $this->createMeeting($user, $meeting, $interviewSchedule->meeting_id, null, $host);
             $interviewSchedule->meeting_id = $meetings->id;
             $interviewSchedule->save();
         }
-        if(!empty($request->employee) || $request->interview_type == 'online'){
+        if (!empty($request->employee) || $request->interview_type == 'online') {
             $employees = [];
-            if(!($request->interview_type)){
+            if (!($request->interview_type)) {
                 $meeting = '';
             }
             foreach ($request->employee as $employee) {
                 $employees = Arr::add($employees, $employee, ['company_id' => $this->user->company_id]);
             }
-            
+
             $interviewSchedule->employees()->sync($employees);
 
             // Mail to employee for inform interview schedule
-            Notification::send($interviewSchedule->employees, new ScheduleInterview($jobApplication,$meeting));
+            Notification::send($interviewSchedule->employees, new ScheduleInterview($jobApplication, $meeting));
         }
 
-        return Reply::redirect(route('admin.interview-schedule.index'), __('menu.interviewSchedule').' '.__('messages.updatedSuccessfully'));
+        return Reply::redirect(route('admin.interview-schedule.index'), __('menu.interviewSchedule') . ' ' . __('messages.updatedSuccessfully'));
     }
 
     /**
@@ -418,8 +423,8 @@ class InterviewScheduleController extends AdminBaseController
      */
     public function destroy($id)
     {
-        abort_if(! $this->user->cans('delete_schedule'), 403);
-        $meeting_id = InterviewSchedule::select('meeting_id')->where('id',$id)->get();
+        abort_if(!$this->user->cans('delete_schedule'), 403);
+        $meeting_id = InterviewSchedule::select('meeting_id')->where('id', $id)->get();
         InterviewSchedule::destroy($id);
         $this->setZoomConfigs();
         ZoomMeeting::destroy($meeting_id[0]->meeting_id);
@@ -434,13 +439,13 @@ class InterviewScheduleController extends AdminBaseController
      */
     public function show(Request $request, $id)
     {
-        abort_if(! $this->user->cans('view_schedule'), 403);
+        abort_if(!$this->user->cans('view_schedule'), 403);
         $this->zoom_setting = ZoomSetting::first();
         $this->schedule = InterviewSchedule::with(['jobApplication', 'user'])->find($id);
         $this->currentDateTimestamp = Carbon::now(company()->timezone)->timestamp;
         $this->tableData = null;
 
-        if($request->has('table')){
+        if ($request->has('table')) {
             $this->tableData = 'yes';
         }
 
@@ -459,46 +464,46 @@ class InterviewScheduleController extends AdminBaseController
                 Notification::send($jobApplication, new CandidateNotify());
                 return Reply::success(__('messages.notificationForHire'));
             }
-            
+
             if ($jobApplication->status->status == 'rejected') {
                 // mail to candidate for hiring notify
                 Notification::send($jobApplication, new CandidateRejected());
                 return Reply::success(__('messages.notificationForReject'));
             }
-            
         } else {
             // mail to candidate for interview reminder
-            Notification::send($jobApplication, new CandidateReminder( $jobApplication->schedule));
+            Notification::send($jobApplication, new CandidateReminder($jobApplication->schedule));
             return Reply::success(__('messages.notificationForReminder'));
         }
-
     }
 
     // Employee response on interview schedule
-    public function employeeResponse($id, $res){
+    public function employeeResponse($id, $res)
+    {
 
         $scheduleEmployee = InterviewScheduleEmployee::find($id);
-        $meetings = ZoomMeeting::find( $scheduleEmployee->schedule->meeting_id);
+        $meetings = ZoomMeeting::find($scheduleEmployee->schedule->meeting_id);
         $users = User::allAdmins(); // Get All admins for mail
         $type = 'refused';
 
-        if($res == 'accept'){  $type = 'accepted'; }
+        if ($res == 'accept') {
+            $type = 'accepted';
+        }
 
         $scheduleEmployee->user_accept_status = $res;
 
         // mail to admin for employee response on refuse or accept
-        Notification::send($users, new EmployeeResponse($scheduleEmployee->schedule, $type, $this->user,$meetings));
+        Notification::send($users, new EmployeeResponse($scheduleEmployee->schedule, $type, $this->user, $meetings));
 
         $scheduleEmployee->save();
 
         return Reply::success(__('messages.responseAppliedSuccess'));
-
     }
 
-    public function changeStatusMultiple(Request $request){
-        abort_if(! $this->user->cans('edit_schedule'), 403);
-        foreach($request->id as $ids)
-        {
+    public function changeStatusMultiple(Request $request)
+    {
+        abort_if(!$this->user->cans('edit_schedule'), 403);
+        foreach ($request->id as $ids) {
             $this->commonChangeStatusFunction($ids, $request);
         }
 
@@ -509,21 +514,21 @@ class InterviewScheduleController extends AdminBaseController
     {
         // store Schedule
         $interviewSchedule = InterviewSchedule::select('id', 'job_application_id', 'status')
-                            ->with([
-                                'jobApplication:id,full_name,email,job_id,status_id',
-                                'employees'
-                            ])
-                            ->where('id', $id)->first();
+            ->with([
+                'jobApplication:id,full_name,email,job_id,status_id',
+                'employees'
+            ])
+            ->where('id', $id)->first();
         $interviewSchedule->status = $request->status;
         $interviewSchedule->save();
 
         $application = $interviewSchedule->jobApplication;
         $status = ApplicationStatus::select('id', 'status');
 
-        if(in_array($request->status, ['rejected', 'canceled'])){
+        if (in_array($request->status, ['rejected', 'canceled'])) {
             $applicationStatus = $status->status('rejected');
         }
-        if($request->status === 'hired'){
+        if ($request->status === 'hired') {
             $applicationStatus = $status->status('hired');
         }
         if ($request->status === 'pending') {
@@ -531,7 +536,7 @@ class InterviewScheduleController extends AdminBaseController
         }
 
         $application->status_id = $applicationStatus->id;
-        
+
         $application->save();
 
         $employees = $interviewSchedule->employees;
@@ -539,12 +544,12 @@ class InterviewScheduleController extends AdminBaseController
 
         $users = $employees->merge($admins);
 
-        if($users){
+        if ($users) {
             // Mail to employee for inform interview schedule
             Notification::send($users, new ScheduleInterviewStatus($application));
         }
 
-        if($request->mailToCandidate ==  'yes'){
+        if ($request->mailToCandidate ==  'yes') {
             // mail to candidate for inform interview schedule status
             Notification::send($application, new ScheduleStatusCandidate($application, $interviewSchedule));
         }

@@ -28,7 +28,7 @@ class AdminJobsController extends AdminBaseController
     public function __construct()
     {
         parent::__construct();
-        $this->pageTitle ='menu.jobs';
+        $this->pageTitle = 'menu.jobs';
         $this->pageIcon = 'icon-badge';
     }
 
@@ -59,7 +59,7 @@ class AdminJobsController extends AdminBaseController
         abort_if(!$this->user->cans('add_jobs'), 403);
 
         $activeJobsCount = Job::where('status', 'active')->count();
-        if($activeJobsCount > 0 && $this->activePackage->package->no_of_job_openings !== null &&$this->activePackage->package->no_of_job_openings <= $activeJobsCount) {
+        if ($activeJobsCount > 0 && $this->activePackage->package->no_of_job_openings !== null && $this->activePackage->package->no_of_job_openings <= $activeJobsCount) {
             $this->message = __('modules.subscription.jobPurchase');
             return view('admin.subscription.ask_purchase', $this->data);
         }
@@ -94,7 +94,7 @@ class AdminJobsController extends AdminBaseController
             'country' => false
         ];
 
-        foreach ($required_columns as $key => $value ) {
+        foreach ($required_columns as $key => $value) {
             if ($request->has($key)) {
                 $required_columns[$key] = true;
             }
@@ -107,7 +107,7 @@ class AdminJobsController extends AdminBaseController
             'terms_and_conditions' => 'no'
         ];
 
-        foreach ($section_visibility as $key => $value ) {
+        foreach ($section_visibility as $key => $value) {
             if ($request->has($key)) {
                 $section_visibility[$key] = 'yes';
             }
@@ -202,12 +202,12 @@ class AdminJobsController extends AdminBaseController
             'country' => false
         ];
 
-        foreach ($required_columns as $key => $value ) {
+        foreach ($required_columns as $key => $value) {
             if ($request->has($key)) {
                 $required_columns[$key] = true;
             }
         }
-        
+
         $section_visibility = [
             'profile_image' => 'no',
             'resume' => 'no',
@@ -215,7 +215,7 @@ class AdminJobsController extends AdminBaseController
             'terms_and_conditions' => 'no'
         ];
 
-        foreach ($section_visibility as $key => $value ) {
+        foreach ($section_visibility as $key => $value) {
             if ($request->has($key)) {
                 $section_visibility[$key] = 'yes';
             }
@@ -231,6 +231,8 @@ class AdminJobsController extends AdminBaseController
         $job->category_id = $request->category_id;
         $job->start_date = $request->start_date;
         $job->end_date = $request->end_date;
+        $job->start_time_slot = $request->start_time_slot;
+        $job->end_time_slot = $request->end_time_slot;
         $job->status = $request->status;
         $job->required_columns = $required_columns;
         $job->section_visibility = $section_visibility;
@@ -285,9 +287,9 @@ class AdminJobsController extends AdminBaseController
         if (\request('job_company') != "") {
             $categories->where('job_company_id', \request('job_company'));
         }
-        
+
         $categories->get();
-        
+
         return DataTables::of($categories)
             ->addColumn('action', function ($row) {
                 $params = [$row->slug];
@@ -297,9 +299,9 @@ class AdminJobsController extends AdminBaseController
                     $action .= '<a href="' . route('admin.jobs.edit', [$row->id]) . '" class="btn btn-primary btn-circle"
                       data-toggle="tooltip" data-original-title="' . __('app.edit') . '"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
                 }
-                
+
                 $action .= ' <a href="javascript:;" class="btn btn-info btn-circle open-url"
-                      data-toggle="tooltip" data-row-open-url="'.route('jobs.jobDetail',$params).'" data-original-title="' . __('app.copyUrl') . '"><i class="fa fa-copy" aria-hidden="true"></i></a>';
+                      data-toggle="tooltip" data-row-open-url="' . route('jobs.jobDetail', $params) . '" data-original-title="' . __('app.copyUrl') . '"><i class="fa fa-copy" aria-hidden="true"></i></a>';
                 if ($this->user->cans('delete_jobs')) {
                     $action .= ' <a href="javascript:;" class="btn btn-danger btn-circle sa-params"
                       data-toggle="tooltip" data-row-id="' . $row->id . '" data-original-title="' . __('app.delete') . '"><i class="fa fa-times" aria-hidden="true"></i></a>';
@@ -367,8 +369,8 @@ class AdminJobsController extends AdminBaseController
             ->editColumn('status', function ($row) {
                 return ucwords($row->status);
             })
-            ->addColumn('mail_status', function ($row) use ($request){
-                return $row->jobs()->where('job_id', $request->jobId)->count() == 0 ? '<label class="badge bg-danger">'.__('modules.newJobEmail.mailNotSent').'</label>' : '<label class="badge bg-success">'.__('modules.newJobEmail.mailSent').'</label>';
+            ->addColumn('mail_status', function ($row) use ($request) {
+                return $row->jobs()->where('job_id', $request->jobId)->count() == 0 ? '<label class="badge bg-danger">' . __('modules.newJobEmail.mailNotSent') . '</label>' : '<label class="badge bg-success">' . __('modules.newJobEmail.mailSent') . '</label>';
             })
             ->addColumn('checkbox', function ($row) {
                 return '
@@ -391,8 +393,7 @@ class AdminJobsController extends AdminBaseController
             }
 
             $jobApplications = JobApplication::whereIn('id', $request->selectedIds)->with('jobs');
-        }
-        else {
+        } else {
             $jobApplications = JobApplication::with('jobs');
         }
 
@@ -402,9 +403,9 @@ class AdminJobsController extends AdminBaseController
         if ($request->excludeSent == 'true') {
             $jobApplicationsCopy = clone $jobApplications;
 
-            $jobApplicationIds = $jobApplicationsCopy->whereHas('jobs', function($q) use ($request){
+            $jobApplicationIds = $jobApplicationsCopy->whereHas('jobs', function ($q) use ($request) {
                 $q->where('job_id', $request->job_for_email);
-            })->get()->map(function($jobApplication) {
+            })->get()->map(function ($jobApplication) {
                 return $jobApplication->id;
             })->toArray();
 
@@ -413,7 +414,7 @@ class AdminJobsController extends AdminBaseController
 
         $jobApplications = $jobApplications->get();
 
-        $jobApplicationIds = $jobApplications->map(function($jobApplication){
+        $jobApplicationIds = $jobApplications->map(function ($jobApplication) {
             return $jobApplication->id;
         })->toArray();
 
@@ -426,7 +427,6 @@ class AdminJobsController extends AdminBaseController
         Notification::send($uniqueEmailJobs, new NewJobOpening($job));
 
         return Reply::success(__('messages.emailsSentSuccessfully'));
-
     }
 
     public function filterJobApplications($request)
@@ -472,16 +472,15 @@ class AdminJobsController extends AdminBaseController
         if ($request->mailStatus != null && $request->mailStatus != '') {
             if ($request->mailStatus !== 'all') {
                 if ($request->mailStatus == 'sent') {
-                    $jobApplications = $jobApplications->whereHas('jobs', function($q) use ($request){
+                    $jobApplications = $jobApplications->whereHas('jobs', function ($q) use ($request) {
                         $q->where('job_id', $request->jobId);
                     });
-                }
-                else {
+                } else {
                     $jobApplicationsCopy = clone $jobApplications;
 
-                    $jobApplicationIds = $jobApplicationsCopy->whereHas('jobs', function($q) use ($request){
+                    $jobApplicationIds = $jobApplicationsCopy->whereHas('jobs', function ($q) use ($request) {
                         $q->where('job_id', $request->jobId);
-                    })->get()->map(function($jobApplication) {
+                    })->get()->map(function ($jobApplication) {
                         return $jobApplication->id;
                     })->toArray();
 
@@ -497,12 +496,11 @@ class AdminJobsController extends AdminBaseController
     //Refresh Expire Date 
     public function refreshDate(UpdateJob $request)
     {
-       $job = Job::find($request->id);
+        $job = Job::find($request->id);
         $job->start_date = $request->start_date;
         $job->end_date = $request->end_date;
         $job->status = 'active';
         $job->save();
         return Reply::success(__('messages.updatedSuccessfully'));
-
     }
 }

@@ -5,10 +5,11 @@
 <h4 class="hidden-sm-up text-white mb-30"> {{ $company->job_opening_title }} </h4>
 <p class="text-white mb-40">{!! $company->job_opening_text !!} </p>
 <div class="location-search d-flex rounded-pill bg-white ">
-     
+
     <div class="align-items-center d-flex rounded-pill location height-50">
         <select class="myselect" name="loaction" id ="location_id">
             <option value="all">@lang('modules.front.allLocation')</option>  
+           
             @foreach($locations as $location)
                 <option value="{{ $location->id }}">{{ ucfirst($location->location) }}</option>                 
             @endforeach
@@ -20,7 +21,7 @@
 
     <div class="align-items-center d-flex rounded-pill designation height-50">
         <select class="myselect" name="category" id ="category">
-            <option value="all">All category</option>  
+            <option value="all">All category </option>  
             @foreach($categories as $category)
                  <option value="{{ $category->id }}">{{ ucfirst($category->name) }}</option>
             @endforeach

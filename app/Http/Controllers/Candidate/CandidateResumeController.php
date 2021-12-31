@@ -18,6 +18,8 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Smalot\PdfParser\Parser;
+use PDF;
 
 class CandidateResumeController extends CandidateBaseController
 {
@@ -50,7 +52,28 @@ class CandidateResumeController extends CandidateBaseController
 
         return view('auth.login');
     }
+    // Generate PDF
+    public function createPDF()
+    {
+        // retreive all records from db
 
+        $this->candidateResume = CandidateResume::where('user_id', auth()->user()->id)->first();
+        $this->educations = Education::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        $this->certifications = Certification::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        $this->awards = AwardResume::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        $this->languages = LanguageResume::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        $this->skills = SkillsResume::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        $this->experiences = WorkExperience::where('candidate_resume_id', auth()->user()->candidateResume->id)->get();
+        // $this->countries = Country::all();
+        // dd($this->data);
+        // return view('candidate.resume.index', $this->data);
+        // share data to view
+        view()->share('candidate', $this->data);
+        $pdf = PDF::loadView('candidate.resume.pdf_View', $this->data);
+
+        // download PDF file with download method
+        return $pdf->download('resume.pdf');
+    }
     public function store(Resume $request)
     {
         // Simple Profile
@@ -204,6 +227,72 @@ class CandidateResumeController extends CandidateBaseController
         }
 
         return Reply::redirect(route('candidate.resume.index'));
+    }
+    public function storeFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+
+            $file = $request->file('file');
+
+            $fileName = $file->getClientOriginalName();
+
+            // $file = $request->validate(
+            //     ['file' => 'required|mimes:pdf',]
+            // );
+            // // use of pdf parser to read content from pdf 
+            // $fileName = $file->getClientOriginalName();
+
+            $pdfParser = new Parser();
+            $pdf = $pdfParser->parseFile($file->path());
+
+            $content = $pdf->getText();
+            // $content = explode("\n", str_replace(' ', '', $pdf->getText()));
+            //Extract NAme 
+            $content = explode("\n", $content);
+            $this->name = $content[1];
+            //Extract Email 
+
+            $email_index = array_search("E-mail: ", $content);
+            $this->email = $content[$email_index + 1];
+            //Extract Address 
+
+            $address_array = [];
+
+            for ($i = 2; $i < $email_index; $i++) {
+                array_push($address_array, $content[$i]);
+            }
+            $this->address = $address_array;
+            //Extract Languages 
+
+            $languages_index = array_search("LANGUAGES", $content);
+            $languages_array = [];
+            $skills_index = array_search("SKILLS", $content);
+            $objective_index = array_search("OBJECTIVE", $content);
+            $workExperience_index = array_search("WORK EXPERIENCE", $content);
+            $certification_index = array_search("CERTIFICATION", $content);
+            for ($i = $languages_index + 1; $i < $skills_index; $i++) {
+                array_push($languages_array, $content[$i]);
+            }
+            $this->languages_array = $languages_array;
+            $this->objective = $content[$objective_index + 1];
+            //Extract WorkExperience 
+
+            $workExperience_array = [];
+            for ($i = $workExperience_index + 1; $i < $certification_index; $i++) {
+                array_push($workExperience_array, $content[$i]);
+            }
+            $this->workExperience_array = $workExperience_array;
+            //Extract Certificaations 
+
+            $certifications = [];
+            for ($i = $certification_index + 1; $i < (array_search("AWARDS", $content) ? array_search("AWARDS", $content) : (sizeof($content))); $i++) {
+                array_push($certifications, $content[$i]);
+            }
+            $this->certifications = $certifications;
+            return view('candidate.resume.create', $this->data);
+            dd($this->data, $content);
+            dd(array_search("E-mail: ", $content));
+        }
     }
     public function show()
     {

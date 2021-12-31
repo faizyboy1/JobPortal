@@ -80,6 +80,8 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/dashboard', 'CandidateDashboardController@index')->name('dashboard');
             Route::resource('profile', 'CandidateProfileController');
             Route::resource('resume', 'CandidateResumeController');
+            Route::get('pdf', 'CandidateResumeController@createPDF')->name('pdf');
+            Route::post('/file', 'CandidateResumeController@storeFile')->name('file');
         }
     );
 
@@ -161,7 +163,7 @@ Route::group(['middleware' => 'auth'], function () {
 
                 Route::get('job-company/data', 'AdminJobsCompanyController@data')->name('job-company.data');
                 Route::resource('job-company', 'AdminJobsCompanyController');
-               
+
 
                 Route::post('job-applications/rating-save/{id?}', 'AdminJobApplicationController@ratingSave')->name('job-applications.rating-save');
                 Route::post('job-applications/viewDetails', 'AdminJobApplicationController@viewDetails')->name('job-applications.viewDetails');

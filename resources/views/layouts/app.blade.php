@@ -196,6 +196,9 @@
             @endif
 
         </ul>
+        {{-- @php
+                 dd($user->roles[0]->name=='candidate');   
+        @endphp --}}
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
         {{--
@@ -215,10 +218,14 @@
         --}}
             <li class="nav-item">
                 <a class="image-container nav-link waves-effect waves-light"
-                @if(!$user->is_superadmin)
-                    href="{{ route('admin.profile.index') }}"
+               
+                @if($user->is_superadmin)
+                href="{{ route('superadmin.profile.index') }}"
+                    
+                @elseif($user->roles[0]->name == 'candidate')
+                    href="{{ route('candidate.profile.index') }}"
                 @else
-                    href="{{ route('superadmin.profile.index') }}"
+                href="{{ route('admin.profile.index') }}"
                 @endif
                 >
                     <div class="image">

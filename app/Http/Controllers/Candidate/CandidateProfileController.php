@@ -8,6 +8,7 @@ use App\User;
 use App\Helper\Files;
 use App\Helper\Reply;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class CandidateProfileController extends CandidateBaseController
 {
